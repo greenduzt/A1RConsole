@@ -1,0 +1,410 @@
+﻿<UserControl x:Class="A1RConsole.Views.Shipping.ShippingView"
+              mc:Ignorable="d" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:DispatchConv="clr-namespace:A1RConsole.Core"
+             xmlns:Controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+             xmlns:BooleanConvertor="clr-namespace:A1RConsole.Core"
+             d:DesignWidth="1050" d:DesignHeight="800">
+    <UserControl.Resources>
+        <DispatchConv:DispatchRadioConvertor x:Key="DisConKey" />
+        <BooleanConvertor:BoolToStringConverter x:Key="BooleanToStringConverter" FalseValue="No" TrueValue="Yes" />
+
+
+        <Style x:Key="RowStyle" TargetType="{x:Type DataGridRow}">
+            <Setter Property="Background" Value="White" />
+            <!--<Setter Property="IsEnabled" Value="{Binding IsProcessing}" />-->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#D1D1D1"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip" Value="{Binding (Validation.Errors).CurrentItem.ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Storyboard x:Key="HomeMouseEnter"/>
+        <Storyboard x:Key="HomeMouseLeave"/>
+
+        <Storyboard x:Key="AdminDashboardMouseEnter"/>
+        <Storyboard x:Key="AdminDashboardMouseLeave"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <GroupBox Header="Shipping Completed" HorizontalAlignment="Left" Height="50" Margin="209,84,0,0" VerticalAlignment="Top" Width="528"/>
+        <TextBlock Background="#FF938F8F" Foreground="White" Padding="0,3,0,0" Margin="0,38,0,0" TextWrapping="Wrap" Text="SHIPPING" TextAlignment="Center" FontWeight="Bold" FontSize="20" FontFamily="Arial" Height="32" VerticalAlignment="Top"/>
+
+        <Border BorderBrush="#FFC5D0EE" Margin="4,148,4,34"  BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" >
+
+            <DataGrid x:Name="dgQuoteDetails"  BorderBrush="#FFE0E0E0" HorizontalGridLinesBrush="#FF9C9C9C" VerticalGridLinesBrush="#FF9C9C9C" HorizontalScrollBarVisibility="Disabled" FontFamily="Verdana" 
+			ItemsSource="{Binding DispatchOrders, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" IsSynchronizedWithCurrentItem="True"  Padding="0,0,7,0"
+			AutoGenerateColumns="False" Grid.Column="0" Margin="0,0,0,0" Background="#e1e9f7" CanUserAddRows="False"   TabIndex="1" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto" >
+                <DataGrid.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"  Color="#FF8F8F8F"/>
+                </DataGrid.Resources>
+
+                <DataGrid.RowStyle>
+                    <StaticResource ResourceKey="RowStyle"/>
+                </DataGrid.RowStyle>
+
+                <DataGrid.InputBindings>
+                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding DoubleClickCommand}" CommandParameter="{Binding DispatchOrders}"/>
+                </DataGrid.InputBindings>
+
+                <DataGrid.Columns>
+                    <!--Sales No-->
+                    <DataGridTextColumn Header="Sales No" Binding="{Binding SalesOrderNo}" Width="Auto">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="15" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="TextAlignment" Value="Left" />
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <!--DD No-->
+                    <DataGridTextColumn Header="DD No" Binding="{Binding DeliveryDocketString}" Width="Auto">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="15" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="TextAlignment" Value="Left" />
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <!--Con Note No-->
+                    <DataGridTextColumn Header="Con Note No" Binding="{Binding ConNoteNumberString}" Width="Auto">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="15" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="TextAlignment" Value="Left" />
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <!--Shipping Date-->
+                    <DataGridTextColumn Header=" Desired&#xA;Shipping&#xA;   Date" Binding="{Binding DesiredDispatchDate, StringFormat=dd/MM/yyyy}" Width="Auto">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="15" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                                <Setter Property="TextAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <!--Dispatched Date-->
+                    <DataGridTextColumn Header="Dispatched&#xA;     Date" Binding="{Binding DispatchedDateStr}" Width="Auto">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="15" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                                <Setter Property="TextAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <!--Carrier Name-->
+                    <DataGridTextColumn Header="Carrier Name" Binding="{Binding FreightCarrier.FreightDescription}" Width="*">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="15" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                                <Setter Property="TextAlignment"  Value="Left" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <!--Customer-->
+                    <DataGridTextColumn Header="Customer" Binding="{Binding Customer.CompanyName}" Width="*">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="15" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                                <Setter Property="ToolTip" Value="Qty in stock" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                                <Setter Property="TextAlignment"  Value="Right" />
+                                <Setter Property="ToolTip" Value="Qty in stock" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <!--Ship To-->
+                    <DataGridTextColumn Header="Ship To" Binding="{Binding ShipToNoLines}" Width="*">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="15" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                                <Setter Property="TextAlignment"  Value="Left" />
+                                <Setter Property="TextWrapping" Value="Wrap" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="{x:Type TextBox}">
+                                <Setter Property="TextWrapping" Value="Wrap" />
+                                <Setter Property="AcceptsReturn" Value="true" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+                    <!--Payment Finalised-->
+                    <!--<DataGridTextColumn Header="Payment&#xA;Finalised" Binding="{Binding PaymentRecieved,Converter={StaticResource BooleanToStringConverter}}" Width="Auto">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                                <Setter Property="TextAlignment"  Value="Center" />
+                                <Setter Property="TextWrapping" Value="NoWrap" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Setter Property="Background" Value="{Binding PaymentFinalisedBackGround}" />
+                                <Setter Property="Foreground" Value="{Binding PaymentFinalisedForeGround}" />
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>-->
+                    <DataGridTextColumn Header="Status" Binding="{Binding StatusStr}" Width="110">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="15" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="FontWeight" Value="Black" />
+                                <Setter Property="TextAlignment"  Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                                <Setter Property="Background" Value="{Binding StatusBackgroundCol}"/>
+                                <Setter Property="Foreground" Value="{Binding StatusForeGroundCol}"/>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Button Content="FINALISE SHIPPING" HorizontalAlignment="Center" VerticalAlignment="Center" Width="140" Height="27" HorizontalContentAlignment="Center" Margin="0,0,0,0" Command="{Binding DataContext.DispatchCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}" ToolTip="View order details and finalise shipping" Visibility="{Binding DispatchOrderVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}">
+                                                <Setter Property="Background" Value="#666666"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="FontSize" Value="11"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type Button}">
+                                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Content="VIEW" HorizontalAlignment="Center" VerticalAlignment="Center" Width="140" Height="27" HorizontalContentAlignment="Left" Margin="0,0,0,0" Command="{Binding DataContext.ViewDispatchCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}" ToolTip="View finalised order details" Visibility="{Binding ViewDispatchOrderVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}">
+                                                <Setter Property="Background" Value="#666666"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="FontSize" Value="11"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type Button}">
+                                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!--<RadioButton Content="Dispatch Today" IsChecked="{Binding DispatchTodayChecked}" GroupName="dis" HorizontalAlignment="Left" Margin="166,87,0,0" VerticalAlignment="Top" Width="114"/>-->
+        <RadioButton Content="Shipping To Be Finalised" IsChecked="{Binding ReadyToDispatchChecked}" GroupName="dis"  HorizontalAlignment="Left" Margin="9,101,0,0" VerticalAlignment="Top" Width="149"/>
+        <RadioButton GroupName="dis" IsChecked="{Binding LastTwoDaysChecked}"  Content="Last Two Days" HorizontalAlignment="Left" Height="21" Margin="219,104,0,0" VerticalAlignment="Top" Width="104" FontWeight="SemiBold"  />
+        <RadioButton GroupName="dis" IsChecked="{Binding DateRangeChecked}" Content="From" HorizontalAlignment="Left" Height="23" Margin="360,104,0,0" VerticalAlignment="Top" Width="55" FontWeight="SemiBold"  />
+
+        <DatePicker                  DisplayDate="{Binding CurrentDate}" IsEnabled="{Binding DateRangeEnabled}"
+        	SelectedDate="{Binding SelectedFromDate}"
+        	Margin="415,100,0,0" 
+        	TabIndex="7" Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="102"/>
+        <Label  Content="To" Margin="532,100,0,0" FontFamily="Verdana" Height="24" VerticalAlignment="Top" HorizontalAlignment="Left" Width="28"  />
+        <DatePicker                  DisplayDate="{Binding CurrentDate}" IsEnabled="{Binding DateRangeEnabled}"
+        	SelectedDate="{Binding SelectedToDate}"
+        	Margin="560,102,0,0" 
+        	TabIndex="7" Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="102"/>
+
+
+        <Button Content="SEARCH" HorizontalAlignment="Left" VerticalAlignment="Top" Width="56" Height="27" HorizontalContentAlignment="Left" Margin="667,100,0,0" Command="{Binding Search}"  CommandParameter="{Binding}" ToolTip="Search shipping finalised" FontWeight="Medium" IsEnabled="{Binding DateRangeEnabled}" >
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="{Binding SearchButtonColour}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <!--<RadioButton Content="Cancelled" IsChecked="{Binding CancelledChecked}" GroupName="dis" HorizontalAlignment="Left" Margin="372,87,0,0" VerticalAlignment="Top" Width="78"/>-->
+        <!--<RadioButton Content="Returned" IsChecked="{Binding ReturnedChecked}" GroupName="dis" HorizontalAlignment="Left" Margin="450,87,0,0" VerticalAlignment="Top" Width="78"/>-->
+        <!--<Border x:Name="childWindow" Visibility="{Binding WindowVisibility}" Background="#88000000" RenderTransformOrigin="0.5,0.5" Margin="0,0,0,0" >
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="-0.12"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="0.724"/>
+                </TransformGroup>
+            </Border.RenderTransform>
+            <ContentControl Content="{Binding XmlContent}"  HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+        </Border>-->
+        <!--<RadioButton Content="All" IsChecked="{Binding DispatchRadio, Converter={StaticResource ResourceKey=DisConKey}, ConverterParameter=All}"
+                     GroupName="dis" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top"/>
+        <RadioButton Content="Dispatched" IsChecked="{Binding DispatchRadio, Converter={StaticResource ResourceKey=DisConKey}, ConverterParameter=Dispatched}" 
+                     GroupName="dis" HorizontalAlignment="Left" Margin="55,87,0,0" VerticalAlignment="Top"/>
+        <RadioButton Content="Dispatch Today" IsChecked="{Binding DispatchRadio, Converter={StaticResource ResourceKey=DisConKey}, ConverterParameter=DispToday}" 
+                     GroupName="dis" HorizontalAlignment="Left" Margin="143,87,0,0" VerticalAlignment="Top" Width="114"/>
+        <RadioButton Content="Ready To Dispatch" IsChecked="{Binding DispatchRadio, Converter={StaticResource ResourceKey=DisConKey}, ConverterParameter=ReadyToDis}" 
+                     GroupName="dis"  HorizontalAlignment="Left" Margin="257,87,0,0" VerticalAlignment="Top" Width="122"/>
+        <RadioButton Content="Cancelled" IsChecked="{Binding DispatchRadio, Converter={StaticResource ResourceKey=DisConKey}, ConverterParameter=Cancelled}" 
+                     GroupName="dis" HorizontalAlignment="Left" Margin="379,87,0,0" VerticalAlignment="Top" Width="78"/>-->
+
+    </Grid>
+</UserControl>
+

@@ -1,0 +1,181 @@
+﻿<Application x:Class="A1RConsole.App"            
+             
+             
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:A1RConsole.ViewModels.Orders.SalesOrders"
+             xmlns:vx="clr-namespace:A1RConsole.Views.Orders.SalesOrders"
+             xmlns:sovm="clr-namespace:A1RConsole.ViewModels.Orders"
+             xmlns:sov="clr-namespace:A1RConsole.Views.Orders"
+             xmlns:sorv="clr-namespace:A1RConsole.Views.Sales"
+             xmlns:sorvm="clr-namespace:A1RConsole.ViewModels.Sales"
+             xmlns:pmvm="clr-namespace:A1RConsole.ViewModels.Products"
+             xmlns:pmv="clr-namespace:A1RConsole.Views.Products"
+             xmlns:savvm="clr-namespace:A1RConsole.ViewModels.Stock"
+             xmlns:sav="clr-namespace:A1RConsole.Views.Stock"
+             xmlns:svvm="clr-namespace:A1RConsole.ViewModels.Suppliers"
+             xmlns:sv="clr-namespace:A1RConsole.Views.Suppliers"
+             xmlns:pvm="clr-namespace:A1RConsole.ViewModels.Purchasing"
+             xmlns:pv="clr-namespace:A1RConsole.Views.Purchasing"
+             xmlns:rvm="clr-namespace:A1RConsole.ViewModels.Receiving"
+             xmlns:rv="clr-namespace:A1RConsole.Views.Receiving"
+             xmlns:shvm="clr-namespace:A1RConsole.ViewModels.Shipping"
+             xmlns:shv="clr-namespace:A1RConsole.Views.Shipping"
+             xmlns:cvm="clr-namespace:A1RConsole.ViewModels.Customers"
+             xmlns:cv="clr-namespace:A1RConsole.Views.Customers"
+             xmlns:ivm="clr-namespace:A1RConsole.ViewModels.Invoicing"
+             xmlns:iv="clr-namespace:A1RConsole.Views.Invoicing"             
+             xmlns:nqvm="clr-namespace:A1RConsole.ViewModels.Quoting"
+             xmlns:nqv="clr-namespace:A1RConsole.Views.Quoting"
+             
+             xmlns:vuqvm="clr-namespace:A1RConsole.ViewModels.Quoting"
+             xmlns:vuqv="clr-namespace:A1RConsole.Views.Quoting"
+             
+             xmlns:cplvm="clr-namespace:A1RConsole.ViewModels.Customers"
+             xmlns:cplv="clr-namespace:A1RConsole.Views.Customers"
+             
+             xmlns:onorvm="clr-namespace:A1RConsole.ViewModels.Orders.PendingOrders"
+             xmlns:onorv="clr-namespace:A1RConsole.Views.Orders.PendingOrders"  
+             
+             xmlns:Ohlvm="clr-namespace:A1RConsole.ViewModels.Invoicing"
+             xmlns:ohlv="clr-namespace:A1RConsole.Views.Invoicing"  
+
+             xmlns:qorvm="clr-namespace:A1RConsole.ViewModels.Orders"
+             xmlns:qor="clr-namespace:A1RConsole.Views.Orders"         
+             
+             xmlns:oq="clr-namespace:A1RConsole.ViewModels.Quoting"
+             xmlns:oqvm="clr-namespace:A1RConsole.Views.Quoting"        
+             
+             xmlns:vjsvm="clr-namespace:A1RConsole.ViewModels.Vjs"
+             xmlns:vjsv="clr-namespace:A1RConsole.Views.Vjs"        
+            
+             xmlns:novm="clr-namespace:A1RConsole.ViewModels.Orders.NewOrderPDF"
+             xmlns:nov="clr-namespace:A1RConsole.Views.Orders.NewOrderPDF"   
+             StartupUri="Views/Login/LoginView.xaml">
+             <!--StartupUri="MainWindow.xaml">-->
+             
+    
+    
+             
+    
+    
+    
+
+    <!-- StartupUri="MainWindow.xaml"> -->
+
+    <!--xmlns:local="clr-namespace:A1RConsole.ViewModels.Orders.NewOrderPDF"-->
+
+
+
+    <Application.Resources>
+
+        <DataTemplate DataType="{x:Type vjsvm:SchedulingReportViewModel}" >
+            <vjsv:SchedulingReportView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vjsvm:OrderPoolReportViewModel}" >
+            <vjsv:OrderPoolReportView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vjsvm:OrderItemsViewModel}" >
+            <vjsv:OrderItemsView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type qorvm:OrdersReportViewModel}" >
+            <qor:OrdersReportView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type oq:OpenQuotesViewModel}" >
+            <oqvm:OpenQuotesView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type qorvm:QuoteOrderReportViewModel}" >
+            <qor:QuoteOrderReportView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type Ohlvm:OrderHasNotLeftViewModel}" >
+            <ohlv:OrderHasNotLeftView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type novm:NewOrderPDFViewModel}" >
+            <nov:NewOrderPDFView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:NewSalesOrderViewModel}" >
+            <vx:NewSalesOrderView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type sovm:OrderStatusViewModel}" >
+            <sov:OrderStatusView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type sorvm:DailySalesReportViewModel}" >
+            <sorv:DailySalesReportView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type pmvm:ProductMaintenanceViewModel}" >
+            <pmv:ProductMaintenanceView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type savvm:StockAdjustmentViewModel}" >
+            <sav:StockAdjustmentView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type savvm:InventoryValueReportViewModel}" >
+            <sav:InventoryValueReportView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type pmvm:ProductPlanningViewModel}" >
+            <pmv:ProductPlanningView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type svvm:SupplierViewModel}" >
+            <sv:SupplierView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type pvm:AddPurchasingOrderViewModel}" >
+            <pv:AddPurchasingOrderView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type rvm:ReceivingViewModel}" >
+            <rv:ReceivingView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type pvm:PrintPurchaseOrderViewModel}" >
+            <pv:PrintPurchaseOrderView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type shvm:ShippingViewModel}" >
+            <shv:ShippingView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type cvm:CustomerViewModel}" >
+            <cv:CustomerView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type ivm:InvoicingActivityViewModel}" >
+            <iv:InvoicingActivityView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type nqvm:NewQuoteViewModel}" >
+            <nqv:NewQuoteView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vuqvm:ViewUpdateQuoteViewModel}" >
+            <vuqv:ViewUpdateQuoteView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type cplvm:CustomerPendingListViewModel}" >
+            <cplv:CustomerPendingListView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type onorvm:PendingOrdersListViewModel}" >
+            <onorv:PendingOrdersListView   />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type cplvm:MailChimpViewModel}" >
+            <cplv:MailChimpViev   />
+        </DataTemplate>
+
+    </Application.Resources>
+</Application>

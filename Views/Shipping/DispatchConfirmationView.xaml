@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="A1RConsole.Views.Shipping.DispatchConfirmationView"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="220" MinHeight="220" d:DesignWidth="350">
+    <Grid Background="White">
+        <TextBlock Text="Order has been dispatched successfully!!!" TextAlignment="Center"  Foreground="Green" FontSize="16" FontWeight="Bold" Height="29" Margin="10,53,10,0" VerticalAlignment="Top"/>
+        <CheckBox Content="Print delivery docket" IsChecked="{Binding IsPrintDeliveryDocket}" Height="24" Margin="72,116,59,0" VerticalAlignment="Top"/>
+        <CheckBox Content="Send confirmation email to customer" IsEnabled="{Binding CustomerEmailEnabled}" IsChecked="{Binding SendConfirmation}" Height="24" Margin="72,141,59,0" VerticalAlignment="Top"/>
+        <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="52" Height="27" HorizontalContentAlignment="Left" Margin="0,0,10,10" Command="{Binding OkCommand}" CommandParameter="{Binding}" ToolTip="Click ok to close this form and submit" FontWeight="Medium">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <TextBlock Text="Tick an item below" TextAlignment="Center"  Foreground="Black" FontSize="12" FontWeight="Bold" Height="17" Margin="10,86,10,0" VerticalAlignment="Top"/>
+        <TextBlock Text="This customer does not have an email. Please add an email to the customer file" TextAlignment="Center"  Foreground="red" FontSize="10" FontWeight="Bold" Height="29" Margin="92,155,64,0" VerticalAlignment="Top" TextWrapping="Wrap" Visibility="{Binding CustomerEmailVisibility}" />
+
+    </Grid>
+</UserControl>

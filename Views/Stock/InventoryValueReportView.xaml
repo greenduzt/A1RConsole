@@ -1,0 +1,119 @@
+﻿<UserControl x:Class="A1RConsole.Views.Stock.InventoryValueReportView"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="900" d:DesignWidth="700">
+    <Grid Background="white">
+        <ComboBox 
+    		x:Name="cmbDispatchTime_Copy3"
+    		TabIndex="5"  
+    		IsEditable="False"   
+    		SelectedValuePath="Content"
+    		IsEnabled="False"
+    		Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="137,56,0,0" Height="23" VerticalAlignment="Top" SelectedValue="{Binding SelectedStockLocation}" HorizontalAlignment="Left" Width="81" >
+            <ComboBoxItem Content="QLD"/>
+            <ComboBoxItem Content="NSW" />
+        </ComboBox>
+        <GroupBox Header="" HorizontalAlignment="Left" Height="89" Margin="343,127,0,0" VerticalAlignment="Top" Width="133"/>
+        <RadioButton Content="Purchased" GroupName="PurFabGroup" IsChecked="{Binding IsPurchasedProducts}" HorizontalAlignment="Left" Height="18" Margin="358,149,0,0" VerticalAlignment="Top" Width="97" FontWeight="SemiBold" />
+        <RadioButton Content="Fabricated" GroupName="PurFabGroup" IsChecked="{Binding IsFabricatedProducts}" HorizontalAlignment="Left" Height="19" Margin="358,168,0,0" VerticalAlignment="Top" Width="97" FontWeight="SemiBold" />
+        <RadioButton Content="Both" GroupName="PurFabGroup" IsChecked="{Binding IsPurFabBoth}" HorizontalAlignment="Left" Height="20" Margin="358,187,0,0" VerticalAlignment="Top" Width="97" FontWeight="SemiBold" />
+        <GroupBox Header="" HorizontalAlignment="Left" Height="89" Margin="343,42,0,0" VerticalAlignment="Top" Width="133"/>
+        <RadioButton Content="Active Products" GroupName="ActIncGroup" IsChecked="{Binding IsActiveProducts}" HorizontalAlignment="Left" Height="18" Margin="358,64,0,0" VerticalAlignment="Top" Width="115" FontWeight="SemiBold" />
+        <RadioButton Content="Inactive Products" GroupName="ActIncGroup" IsChecked="{Binding IsInActiveProducts}" HorizontalAlignment="Left" Height="19" Margin="358,83,0,0" VerticalAlignment="Top" Width="116" FontWeight="SemiBold" />
+        <RadioButton Content="Both" GroupName="ActIncGroup" IsChecked="{Binding IsActInacBoth}" HorizontalAlignment="Left" Height="20" Margin="358,102,0,0" VerticalAlignment="Top" Width="97" FontWeight="SemiBold" />
+        <TextBlock VerticalAlignment="Top" Padding="1" Text="Product Code" FontWeight="SemiBold"  TextWrapping="Wrap" Foreground="Black" TextAlignment="Left"  Height="17"  HorizontalAlignment="Left" Width="105" FontFamily="Arial" Margin="31,85,0,0" />
+        <ComboBox 
+        	IsTextSearchEnabled="True"
+        	TabIndex="3"  
+        	IsEditable="True"        	
+        	ItemsSource="{Binding ProductList, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+			DisplayMemberPath="ProductCode"  
+			SelectedValuePath="ProductCode"   
+			SelectedItem="{Binding SelectedProduct, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"  
+        	Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Height="23 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Margin="137,82,0,0" />
+        <TextBlock VerticalAlignment="Top" Padding="1" Text="Stock Location" FontWeight="SemiBold"  TextWrapping="Wrap" Foreground="Black" TextAlignment="Left"  Height="17"  HorizontalAlignment="Left" Width="105" FontFamily="Arial" Margin="31,60,0,0" />
+        <TextBlock VerticalAlignment="Top" Padding="1" Text="Commodity Code"  TextWrapping="Wrap" Foreground="Black" TextAlignment="Left"  Height="17" FontWeight="SemiBold" HorizontalAlignment="Left" Width="105" FontFamily="Arial" Margin="31,135,0,0" />
+        <ComboBox x:Name="cmbCommodityCodes" 
+        	IsTextSearchEnabled="True"
+        	TabIndex="3"  
+        	IsEditable="True"        	
+        	ItemsSource="{Binding CommodityCodes, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+        	SelectedValue="SelectedCommodityCode"   
+        	Text="{Binding SelectedCommodityCode, UpdateSourceTrigger=PropertyChanged}"    
+        	Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Height="23 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Margin="137,132,0,0" />
+        <ComboBox 
+        	x:Name="cmbDispatchTime_Copy"
+        	TabIndex="5"  
+        	IsEditable="False"   
+        	SelectedValuePath="Content"
+        	
+        	Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="137,157,0,0" Height="23" VerticalAlignment="Top" SelectedValue="{Binding SelectedSort}" HorizontalAlignment="Left" Width="104" >
+            <ComboBoxItem Content="Ascending"/>
+            <ComboBoxItem Content="Descending" />
+        </ComboBox>
+        <TextBlock VerticalAlignment="Top" Padding="1" Text="Sort By" FontWeight="SemiBold"  TextWrapping="Wrap" Foreground="Black" TextAlignment="Left"  Height="17"  HorizontalAlignment="Left" Width="105" FontFamily="Arial" Margin="31,161,0,0" />
+        <TextBlock Background="#FF938F8F" Foreground="White" Padding="0,3,0,0" Margin="0,10,0,0" TextWrapping="Wrap" Text="INVENTORY REPORT" TextAlignment="Center" FontWeight="Bold" FontSize="14" FontFamily="Verdana" Height="26" VerticalAlignment="Top"/>
+        <Button Content="CLOSE" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="60" Height="24" HorizontalContentAlignment="Left" Margin="0,0,6,6" Command="{Binding CloseCommand}"  ToolTip="Close this form">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <Button Content="PRINT" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="60" Height="24" HorizontalContentAlignment="Left" Margin="0,0,64,6" Command="{Binding PrintCommand}"  ToolTip="Print product count"  >
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <TextBlock VerticalAlignment="Top" Padding="1" Text="Product Type" FontWeight="SemiBold"  TextWrapping="Wrap" Foreground="Black" TextAlignment="Left"  Height="17"  HorizontalAlignment="Left" Width="105" FontFamily="Arial" Margin="31,110,0,0" />
+        <ComboBox 
+        	IsTextSearchEnabled="True"
+        	TabIndex="3"  
+        	IsEditable="True"        	
+        	ItemsSource="{Binding ProductTypes, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+        	DisplayMemberPath="Type"  
+        	SelectedValuePath="Type"   
+        	SelectedItem="{Binding SelectedProductType, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"  
+        	Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Height="23 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Margin="137,107,0,0" />
+
+    </Grid>
+</UserControl>

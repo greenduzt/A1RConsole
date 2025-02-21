@@ -1,0 +1,1697 @@
+﻿<UserControl x:Class="A1RConsole.Views.Customers.CustomerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+             xmlns:Core="clr-namespace:A1RConsole.Core" 
+            
+	         mc:Ignorable="d"
+             xmlns:currency="clr-namespace:CurrencyTextBoxControl;assembly=CurrencyTextBoxControl"
+	         d:DesignWidth="1050" d:DesignHeight="800">
+    <UserControl.Resources>
+
+       
+           
+        <Storyboard x:Key="HomeMouseEnter"/>
+        <Storyboard x:Key="HomeMouseLeave"/>
+
+        <Storyboard x:Key="AdminDashboardMouseEnter"/>
+        <Storyboard x:Key="AdminDashboardMouseLeave"/>
+
+        <!--<Style x:Key="TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+    					Value="{Binding (Validation.Errors).CurrentItem.ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>-->
+
+        <Style TargetType="{x:Type TextBox}">
+
+            <Setter Property="Background" Value="#e1e9f7"/>
+        </Style>
+        <Style x:Key="ComboBoxItemStyle1" TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="Background" Value="#e1e9f7"/>
+            <Setter Property="BorderBrush" Value="#e1e9f7"/>
+
+        </Style>
+
+        <Style x:Key="alternatingListViewItemStyle" TargetType="{x:Type ListViewItem}">
+            <Style.Triggers>
+                <!-- setting up triggers for alternate background colors -->
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#d8d9dc"></Setter>
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="2">
+                    <Setter Property="Background" Value="White"></Setter>
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+        </Style>
+
+        <Style TargetType="GridViewColumnHeader">
+            <Setter Property="Visibility" Value="Collapsed" />
+        </Style>
+    </UserControl.Resources>
+    <Grid Background="White" Panel.ZIndex="999999999">
+        <!--<i:Interaction.Triggers>
+            <i:EventTrigger EventName="MouseMove">
+                <i:InvokeCommandAction Command="{Binding CheckDataChangedCommand}"  />
+            </i:EventTrigger>
+        </i:Interaction.Triggers>-->
+
+        <!--<TextBlock x:Name="BackQuoteTextBlock" Style="{StaticResource HoverEffect}" Height="25" HorizontalAlignment="Right" Margin="0,0,106,34" VerticalAlignment="Bottom" Width="92" FontSize="12" Text="GO BACK" FontWeight="Bold" Padding="0,4,0,0" TextWrapping="Wrap" TextAlignment="Center" RenderTransformOrigin="0.5,0.5">
+            <TextBlock.InputBindings>
+                <MouseBinding Command="{Binding BackCommand}" MouseAction="LeftClick" />
+            </TextBlock.InputBindings>
+            <TextBlock.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </TextBlock.RenderTransform>
+        </TextBlock>-->
+        <!--<TextBlock x:Name="ExitMainMenuTextBlock" Style="{StaticResource HoverEffect}" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="87" FontSize="12" Text="EXIT" FontWeight="Bold" Padding="0,4,0,0" TextWrapping="Wrap" TextAlignment="Center" RenderTransformOrigin="0.35,0.52" Margin="0,0,15,34" MouseLeftButtonDown="ExitMainMenuTextBlock_MouseLeftButtonDown">
+         -->
+        <!--   <TextBlock.InputBindings>
+                <MouseBinding Command="{Binding CloseCommand,Mode=TwoWay}" CommandParameter="{Binding ElementName=AddCustomerMain}" MouseAction="LeftClick" />
+            </TextBlock.InputBindings>
+            -->
+        <!--
+            <TextBlock.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </TextBlock.RenderTransform>
+        </TextBlock>-->
+
+        <TabControl Margin="10,74,143,38" Background="white" SelectedIndex="{Binding MainTabSelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+
+            <TabItem Header="Customers" TabIndex="0" Margin="-2,0,-2,-2">
+                <Grid>
+                    <GroupBox  Height="260" Margin="5,0" VerticalAlignment="Top">
+                        <Grid>
+
+                            <Label Content="*" Foreground="red" FontSize="16" FontWeight="Bold" Margin="216,50,0,0" VerticalAlignment="Top" Padding="0" Height="13" HorizontalAlignment="Left" Width="9" Visibility="{Binding CustomerTypeStarVisibility}" />
+                            <Label Content="*" Foreground="red" FontSize="16" FontWeight="Bold" Margin="860,129,0,0" VerticalAlignment="Top" Padding="0" Height="13" HorizontalAlignment="Left" Width="9"/>
+                            <Label Content="Customer Type" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,53,0,0" Width="104"/>
+                            <Label Content="Address" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,78,0,0" Width="99"/>
+                            <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding CompanyAddress}" VerticalAlignment="Top" TextAlignment="Left" Margin="112,78,0,0" Width="257" Height="61" Padding="0,3,0,0" TabIndex="2" Background="White"  />
+                            <Label Content="Suburb" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,140,0,0" Width="99"/>
+                            <ComboBox 
+								TabIndex="1"  
+								IsEditable="False"   
+								SelectedValuePath="Content"
+								Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="112,54,0,0" Height="23" VerticalAlignment="Top" SelectedValue="{Binding CustomerType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="102" IsEnabled="{Binding CustomerTypeEnabled}" >
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Background" Value="#e1e9f7"/>
+                                        <Setter Property="BorderBrush" Value="#e1e9f7"/>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                                <!--<ComboBoxItem Content="Select"/>-->
+                                <ComboBoxItem Content="Prepaid" />
+                                <ComboBoxItem Content="Account" />
+                            </ComboBox>
+                            <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CompanyCity}" VerticalAlignment="Top" TextAlignment="Left" Margin="112,140,0,0" Width="189" Height="26" Padding="0,3,0,0" TabIndex="3" Background="White" />
+                            <Label Content="State" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,165,0,0" Width="99"/>
+                            <ComboBox 
+								TabIndex="4"  
+								IsEditable="False"   
+								SelectedValuePath="Content"
+								Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="112,167,0,0" Height="23" VerticalAlignment="Top" 
+                                Padding="4,5,0,0"
+                                SelectedValue="{Binding SelectedCustomerState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="102" >
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Background" Value="#e1e9f7"/>
+                                        <Setter Property="BorderBrush" Value="#e1e9f7"/>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                                <ComboBoxItem Content="QLD" />
+                                <ComboBoxItem Content="NSW" />
+                                <ComboBoxItem Content="VIC" />
+                                <ComboBoxItem Content="WA" />
+                                <ComboBoxItem Content="SA" />
+                                <ComboBoxItem Content="NT" />
+                                <ComboBoxItem Content="TAS" />
+                                <ComboBoxItem Content="ACT" />
+                                <ComboBoxItem Content="OTHER" />
+                                <ComboBoxItem Content="Select" />
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged" >
+                                        <i:InvokeCommandAction Command="{Binding StateChangedCommand }" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                            <!--<TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CompanyState}" VerticalAlignment="Top" TextAlignment="Left" Margin="112,132,0,0" Width="102" Height="26" Padding="0,3,0,0" TabIndex="4" />-->
+                            <Label Content="Country" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,190,0,0" Width="104"/>
+                            <!--<TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CompanyCountry}" VerticalAlignment="Top" TextAlignment="Left" Margin="112,191,0,0" Width="102" Height="26" Padding="0,3,0,0" TabIndex="6" Background="White" />-->
+                            <Label Content="Post Code" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="234,166,0,0" Width="67"/>
+                            <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CompanyPostCode}" VerticalAlignment="Top" TextAlignment="Left" Margin="301,167,0,0" Width="68" Height="23" Padding="0,3,0,0" TabIndex="5" Background="White" />
+                            <CheckBox Content="Active" Margin="0,32,0,0" Foreground="Black" FontWeight="SemiBold" Height="19" VerticalAlignment="Top" HorizontalAlignment="Right" Width="59" IsChecked="{Binding Active}" IsEnabled="{Binding IsCreditTabEnabled}" />
+                            <Label Content="Company Name" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,26,0,0" Width="104"/>
+
+                            <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap"  Text="{Binding NewCompanyName}" VerticalAlignment="Top" TextAlignment="Left" Margin="112,27,0,0" Width="426" Height="26" Padding="0,3,0,0" TabIndex="0" Visibility="{Binding NewCompanyNameVisibility}"  />
+
+                            <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap"  Text="{Binding EditCompanyName}" VerticalAlignment="Top" TextAlignment="Left" Margin="112,27,0,0" Width="426" Height="26" Padding="0,3,0,0" TabIndex="0" Visibility="{Binding EditNameVisibility}"  />
+
+                            <ComboBox x:Name="cmbProducts" 
+							    IsTextSearchEnabled="True"
+							    TabIndex="0"  
+							    IsEditable="True"        	
+							    ItemsSource="{Binding CustomerList, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+							    DisplayMemberPath="CompanyName"  
+							    SelectedValuePath="CompanyName" 
+                                SelectedItem="{Binding SelectedCustomer, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+                                SelectedValue="{Binding SelectedCustomer.CompanyName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+							    Foreground="Black" FontFamily="Verdana" Height="26 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="426" Margin="112,27,0,0" SelectionChanged="cmbProducts_SelectionChanged" Background="#FFE1E9F7"  Visibility="{Binding SelectedCompanyNameVisibility}" >
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged" >
+                                        <i:InvokeCommandAction Command="{Binding CustomerChangedCommand }" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+
+
+                            <ComboBox x:Name="cmbCategory" 
+							    IsTextSearchEnabled="True"
+							    TabIndex="10"  
+							    IsEditable="False"        	
+							    ItemsSource="{Binding Categories, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+							    DisplayMemberPath="CategoryName"  
+							    SelectedValuePath="CategoryName" 
+                                SelectedItem="{Binding SelectedCategory, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+                                Text="{Binding SelectedCategory.CategoryName, UpdateSourceTrigger=PropertyChanged}"    
+                        		TextSearch.TextPath="CategoryName"
+                                      Padding="4,5,0,0"
+							    Foreground="Black" FontFamily="Verdana" Height="26 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="306" Margin="552,133,0,0"  Background="#FFE1E9F7"  />
+
+
+                            <Label Content="Company Email " HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,51,0,0" Width="96"/>
+                            <Label Content="Company Telephone " HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,78,0,0" Width="122"/>
+                            <Label Content="Company Fax " HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,105,0,0" Width="122"/>
+                            <Label Content="Primary Business " HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,132,0,0" Width="122"/>
+                            <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CompanyEmail, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextAlignment="Left" Margin="552,52,0,0" Width="306" Height="26" Padding="0,3,0,0" TabIndex="7" Background="White" />
+                            <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CompanyTelephone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextAlignment="Left" Margin="552,78,0,0" Width="118" Height="26" Padding="0,3,0,0" TabIndex="8" Background="White" />
+                            <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CompanyFax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextAlignment="Left" Margin="552,106,0,0" Width="118" Height="26" Padding="0,3,0,0" TabIndex="9" Background="White" />
+
+                            <Label Content="Last Updated By" HorizontalAlignment="Left" Margin="8,218,0,0" Width="97" Height="26" VerticalAlignment="Top"/>
+                            <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding LastUpdatedString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextAlignment="Left" Margin="112,220,0,0" Background="White" Width="293" Height="22" Padding="0,3,0,0" TabIndex="1" IsReadOnly="True" />
+                            <Label Content="*" Foreground="red" FontSize="16" FontWeight="Bold" Margin="216,164,0,0" VerticalAlignment="Top" Padding="0" Height="13" HorizontalAlignment="Left" Width="9"/>
+                            <ComboBox x:Name="cmbCountry"    
+                                IsTextSearchEnabled="True"
+                                TabIndex="10"                                
+                                ItemsSource="{Binding CountryList}" 
+                                DisplayMemberPath="CountryName"  
+                                SelectedValuePath="CountryName"                               
+                                
+                                Padding="4,5,0,0"
+                                SelectedValue="{Binding SelectedCountry,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"    
+                        		
+                                Foreground="Black" FontFamily="Verdana" Height="26 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="293" 
+                                Margin="112,192,0,0"  Background="#FFE1E9F7"  >
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged" >
+                                        <i:InvokeCommandAction Command="{Binding CountryChangedCommand }" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <ComboBox.Resources>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="IsEnabled" Value="{Binding IsEnabled}"/>
+                                    </Style>
+                                </ComboBox.Resources>
+                            </ComboBox>
+                        </Grid>
+                    </GroupBox>
+
+                    <TabControl Margin="8,265,7,0" Background="white" SelectedIndex="{Binding BottomTabSelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CustomerBottomTabEnabled}">
+                        <TabItem Header="Discount" TabIndex="0" Margin="-2,0,-18,-2">
+                            <Grid>
+                                <Label Content="Discount" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25,0,0" Width="73"/>
+                                <ListView x:Name="listView" Margin="112,31,0,0" HorizontalAlignment="Left" Width="491" Height="326" VerticalAlignment="Top" ItemsSource="{Binding DiscountStructure,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Background="#e0e0e0" >
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="Focusable" Value="false"/>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Category Name" Width="350" DisplayMemberBinding="{Binding Category.CategoryName}"/>
+                                            <!--<GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Background="Green" Foreground="White" Padding="1" 
+                                                               Text="Excluding Olympact&#x0a;        Refer PDF"       >
+                                                            <TextBlock.Style>
+                                                                <Style>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListViewItem} }, Path=IsSelected}"
+              Value="False">
+                                                                            <Setter Property="TextBlock.Visibility" Value="{Binding DiscountLabelVisibility,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>-->
+                                            <GridViewColumn Header="Discount">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <ComboBox  ItemsSource="{Binding Category.Discounts,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
+                                                                  SelectedValue="{Binding Discount,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
+                                                                  Width="50" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" IsEditable="False" >
+                                                                <!--<i:Interaction.Triggers>
+                                                                    <i:EventTrigger EventName="SelectionChanged" >
+                                                                        <i:InvokeCommandAction Command="{Binding DataContext.SelectionChangedCommand, RelativeSource={RelativeSource AncestorType={x:Type               ListView}}}" CommandParameter="{Binding}"/>
+                                                                    </i:EventTrigger>
+                                                                </i:Interaction.Triggers>-->
+                                                            </ComboBox>
+                                                            <TextBlock Padding="2" Text="%" />
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Margin="3" ToolTip="View document" Command="{Binding DataContext.ViewDocumentCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"  CommandParameter="{Binding}" BorderThickness="0" >
+                                                            <Image Source="/A1RConsole;component/Images/pdf.png" Width="18" Height="18" />
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+
+
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="Addresses/Contacts" TabIndex="1" Margin="18,0,-30,-2">
+                            <Grid>
+                                <GroupBox Header="Ship To" Height="216" Margin="5,-2,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="401">
+                                    <Grid>
+                                        <Label Content="Address" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,8,0,0" Width="75"/>
+                                        <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ShipAddress}" VerticalAlignment="Top" TextAlignment="Left" Margin="83,9,0,0" Width="296" Height="69" Padding="0,3,0,0" TabIndex="10" Background="White" />
+                                        <Label Content="City" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,78,0,0" Width="75"/>
+                                        <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ShipCity}" VerticalAlignment="Top" TextAlignment="Left" Margin="83,79,0,0" Width="221" Height="26" Padding="0,3,0,0" TabIndex="11" Background="White" />
+                                        <Label Content="State" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,106,0,0" Width="70"/>
+
+                                        <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ShipState}" VerticalAlignment="Top" TextAlignment="Left" Margin="83,106,0,0" Width="172" Height="26" Padding="0,3,0,0" TabIndex="12" Background="White" />
+                                        <Label Content="Country" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,160,0,0" Width="75"/>
+                                        <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ShipCountry}" VerticalAlignment="Top" TextAlignment="Left" Margin="83,160,0,0" Width="142" Height="26" Padding="0,3,0,0" TabIndex="14" Background="White" />
+                                        <Label Content="Post Code" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,133,0,0" Width="67"/>
+                                        <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ShipPostCode}" VerticalAlignment="Top" TextAlignment="Left" Margin="83,133,0,0" Width="68" Height="26" Padding="0,3,0,0" TabIndex="13" Background="White" />
+                                    </Grid>
+                                </GroupBox>
+                                <GroupBox Header="Contact Person Details" Margin="411,-2,10,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="390*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Content="ADD NEW" VerticalAlignment="Top" Height="24" HorizontalContentAlignment="Left" Margin="0,0,0,0" Command="{Binding AddNewContactPersonCommand}" ToolTip="Add new contact person" TabIndex="3" HorizontalAlignment="Right" Width="55" Visibility="{Binding AddNewContactBtnVisibility}" >
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Setter Property="Background" Value="#666666"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                    <Setter Property="FontSize" Value="9"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#4c4c4c"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                        <DataGrid x:Name="dgContactPeople"  BorderBrush="#FFE0E0E0" HorizontalGridLinesBrush="#FF9C9C9C" VerticalGridLinesBrush="#FF9C9C9C" HorizontalScrollBarVisibility="Auto" FontFamily="Verdana" IsReadOnly="True" ItemsSource="{Binding ContactPersons, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" Background="#e0e0e0" CanUserAddRows="False"   TabIndex="7" BorderThickness="0" Margin="0,26,0,30" SelectionMode="Single" >
+                                            <DataGrid.Resources>
+                                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"  Color="#FF8F8F8F"/>
+                                                <ContextMenu x:Key="RowMenu" DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                                    <MenuItem Header="Copy" Command="{Binding DataContext.RowCopyCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}" />
+
+
+
+                                                </ContextMenu>
+                                            </DataGrid.Resources>
+                                            <DataGrid.RowStyle>
+                                                <Style TargetType="DataGridRow" >
+                                                    <Setter Property="ContextMenu" Value="{StaticResource RowMenu}" />
+                                                </Style>
+                                            </DataGrid.RowStyle>
+
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Contact Name" Width="auto" IsReadOnly="True" Binding="{Binding ContactPersonName, Mode=TwoWay}">
+                                                    <DataGridTextColumn.HeaderStyle>
+                                                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                            <Setter Property="FontSize" Value="13" />
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                        </Style>
+                                                    </DataGridTextColumn.HeaderStyle>
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="{x:Type TextBlock}">
+                                                            <Setter Property="Padding" Value="5" />
+                                                            <Setter Property="TextAlignment" Value="Left" />
+                                                            <Setter Property="FontSize" Value="13" />
+                                                            <Setter Property="FontWeight" Value="Medium" />
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Header="Phone 1" Width="auto" IsReadOnly="True" Binding="{Binding PhoneNumber1, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
+                                                    <DataGridTextColumn.HeaderStyle>
+                                                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                            <Setter Property="FontSize" Value="13" />
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                        </Style>
+                                                    </DataGridTextColumn.HeaderStyle>
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="{x:Type TextBlock}">
+                                                            <Setter Property="Padding" Value="5" />
+                                                            <Setter Property="TextAlignment" Value="Left" />
+                                                            <Setter Property="FontSize" Value="13" />
+                                                            <Setter Property="FontWeight" Value="Medium" />
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+
+                                                <DataGridTextColumn Header="Phone 2" Width="auto" IsReadOnly="True" Binding="{Binding PhoneNumber2, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
+                                                    <DataGridTextColumn.HeaderStyle>
+                                                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                            <Setter Property="FontSize" Value="13" />
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                        </Style>
+                                                    </DataGridTextColumn.HeaderStyle>
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="{x:Type TextBlock}">
+                                                            <Setter Property="Padding" Value="5" />
+                                                            <Setter Property="TextAlignment" Value="Left" />
+                                                            <Setter Property="FontSize" Value="13" />
+                                                            <Setter Property="FontWeight" Value="Medium" />
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+
+                                                <DataGridTextColumn Header="E-Mail" Width="auto" IsReadOnly="True" Binding="{Binding Email, Mode=TwoWay}">
+                                                    <DataGridTextColumn.HeaderStyle>
+                                                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                            <Setter Property="FontSize" Value="13" />
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                        </Style>
+                                                    </DataGridTextColumn.HeaderStyle>
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="{x:Type TextBlock}">
+                                                            <Setter Property="Padding" Value="5" />
+                                                            <Setter Property="TextAlignment" Value="Left" />
+                                                            <Setter Property="FontSize" Value="13" />
+                                                            <Setter Property="FontWeight" Value="Medium" />
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Button Content="EDIT" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Height="25" HorizontalContentAlignment="Left" Margin="0,0,0,0" Command="{Binding DataContext.EditContactPersonCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}" ToolTip="Edit contact person details">
+                                                                <Button.Style>
+                                                                    <Style TargetType="{x:Type Button}">
+                                                                        <Setter Property="Background" Value="#666666"/>
+                                                                        <Setter Property="Foreground" Value="White"/>
+                                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                                        <Setter Property="FontSize" Value="10"/>
+                                                                        <Setter Property="Template">
+                                                                            <Setter.Value>
+                                                                                <ControlTemplate TargetType="{x:Type Button}">
+                                                                                    <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                                    </Border>
+                                                                                </ControlTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                        <Style.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter Property="Background" Value="#4c4c4c"/>
+                                                                            </Trigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Button.Style>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Button Content="DELETE" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Height="25" HorizontalContentAlignment="Left" Margin="0,0,0,0" Command="{Binding DataContext.DeleteContactPersonCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}" ToolTip="Delete contact person">
+                                                                <Button.Style>
+                                                                    <Style TargetType="{x:Type Button}">
+                                                                        <Setter Property="Background" Value="#666666"/>
+                                                                        <Setter Property="Foreground" Value="White"/>
+                                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                                        <Setter Property="FontSize" Value="10"/>
+                                                                        <Setter Property="Template">
+                                                                            <Setter.Value>
+                                                                                <ControlTemplate TargetType="{x:Type Button}">
+                                                                                    <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                                    </Border>
+                                                                                </ControlTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                        <Style.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter Property="Background" Value="#4c4c4c"/>
+                                                                            </Trigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Button.Style>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+                                </GroupBox>
+                                <!--<Label Content="Last Updated By" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="16,0,0,4" Width="97"/>
+                                <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding LastUpdatedString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Bottom" TextAlignment="Right" Margin="118,0,0,4" Width="293" Height="26" Padding="0,3,0,0" TabIndex="1" IsReadOnly="True" />-->
+                                <!--<Button Content="UPDATE" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="106" Height="24" HorizontalContentAlignment="Left" Margin="0,0,8,4" Command="{Binding UpdateCommand}" ToolTip="Update order" TabIndex="16" Visibility="{Binding UpdateCommandVisibility}" >
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Background" Value="#666666"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="FontSize" Value="12"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#4c4c4c"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="ADD CUSTOMER" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="106" Height="24" HorizontalContentAlignment="Left" Margin="0,0,8,0" Command="{Binding AddNewCustomerDBCommand}" ToolTip="Add new customer" TabIndex="36" Visibility="{Binding AddCommandVisibility}" >
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Background" Value="#666666"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="FontSize" Value="12"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#4c4c4c"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>-->
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="Product Types" TabIndex="2" Margin="30,0,-30,-2" >
+                            <Grid>
+                                <Label Content="Select Product&#xA;Type To Add" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,15,0,0" Width="101" Height="42"/>
+                                <ComboBox x:Name="cmbProductsInstalled" 
+							    IsTextSearchEnabled="True"
+							    TabIndex="10"  
+							    IsEditable="False"        	
+							    ItemsSource="{Binding ProductsInstalled, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+							    DisplayMemberPath="Type"  
+							    SelectedValuePath="Type" 
+                                SelectedItem="{Binding SelectedProductsInstalled, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+                                Text="{Binding SelectedProductsInstalled.Type, UpdateSourceTrigger=PropertyChanged}"    
+                        		TextSearch.TextPath="Type"
+							    Foreground="Black" FontFamily="Verdana" Height="26 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="265" Margin="112,21,0,0"  Background="#FFE1E9F7"  />
+
+                                <ListView  Margin="112,50,0,0" HorizontalAlignment="Left" Width="265" Height="230" VerticalAlignment="Top" ItemsSource="{Binding ProductsInstalledView,UpdateSourceTrigger=PropertyChanged}" Background="#e0e0e0"  SelectedItem="{Binding ProductTypeSelected,UpdateSourceTrigger=PropertyChanged}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Width="150" DisplayMemberBinding="{Binding Type,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <Button Content="REMOVE" Command="{Binding RemoveProductInstalled}" FontSize="10" HorizontalAlignment="Left" IsEnabled="{Binding IsRemoveEnabled}" Margin="381,52,0,0" VerticalAlignment="Top" Width="59" ToolTip="Select item and click to remove" />
+                                <Button Content="ADD" Command="{Binding AddProductInstalled}" IsEnabled="{Binding IsAddEnabled}" FontSize="10" HorizontalAlignment="Left"  Margin="381,27,0,0" VerticalAlignment="Top" Width="59" ToolTip="Select item from the list and click ADD to existing list" />
+                                <Label Content="Existing Types" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,62,0,0" Width="100"/>
+                            </Grid>
+                        </TabItem>
+                        <!--<TabItem Header="Sales Orders" ToolTip="Current sales orders which not have been dispatched yet" TabIndex="2" Margin="30,0,-30,-2" IsEnabled="{Binding IsCreditTabEnabled}" >-->
+                        <TabItem Header="Sales Orders" ToolTip="Current sales orders which not have been dispatched yet" TabIndex="3" Margin="30,0,-30,-2"  IsEnabled="{Binding BrowseTabEnabled}">
+                            <Grid>
+                                <DataGrid x:Name="dgCustomerOpenSalesOrders"  BorderBrush="#FFE0E0E0" HorizontalGridLinesBrush="#FF9C9C9C" VerticalGridLinesBrush="#FF9C9C9C" HorizontalScrollBarVisibility="Disabled" FontFamily="Verdana" IsReadOnly="True" ItemsSource="{Binding SalesOrderLines, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" Background="#e0e0e0" CanUserAddRows="False"   TabIndex="7" BorderThickness="0" Margin="0,10,0,30" >
+                                    <DataGrid.Resources>
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"  Color="#FF8F8F8F"/>
+                                    </DataGrid.Resources>
+
+                                    <DataGrid.Columns>
+                                        <!-- Sales No -->
+                                        <DataGridTextColumn Header="Sales No" Width="auto" IsReadOnly="False" Binding="{Binding SalesOrder.SalesOrderNo, Mode=TwoWay}"  >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!-- Status -->
+                                        <DataGridTextColumn Header="Status" Width="auto" IsReadOnly="False" Binding="{Binding SalesOrder.OrderStatus, Mode=TwoWay}"  >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Left" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!-- Customer Name -->
+                                        <DataGridTextColumn Header="Customer Name" Width="*" IsReadOnly="False" Binding="{Binding SalesOrder.Customer.CompanyName, Mode=TwoWay}"  >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Left" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!-- Sales Rep -->
+                                        <DataGridTextColumn Header="Sales Rep" Width="auto" IsReadOnly="False" Binding="{Binding SalesOrder.SalesMadeBy, Mode=TwoWay}" >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Left" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!-- Purchase Order No -->
+                                        <DataGridTextColumn Header="Purchase Order No" Width="Auto" IsReadOnly="False" Binding="{Binding SalesOrder.CustomerOrderNo, Mode=TwoWay}"  >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Left" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!-- Order Date -->
+                                        <DataGridTextColumn Header="Order Date" Width="auto" IsReadOnly="False" Binding="{Binding SalesOrder.OrderDate,StringFormat=dd/MM/yyyy, Mode=TwoWay}">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!-- Desired Ship Date -->
+                                        <DataGridTextColumn Header=" Desr'd Ship Date" Width="auto" IsReadOnly="False" Binding="{Binding SalesOrder.DesiredDispatchDate,StringFormat=dd/MM/yyyy, Mode=TwoWay}">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                    <Setter Property="ToolTip" Value="Desired shipping date" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                    <Setter Property="ToolTip" Value="Desired shipping date" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+
+
+                                        <!-- Order Amount -->
+                                        <DataGridTextColumn Header="Order Amount" Width="auto" IsReadOnly="False" Binding="{Binding SalesOrder.SalesOrderDetails[0].Quantity,StringFormat=\{0:c\}, Mode=TwoWay}"  >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Right" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!-- Packed Amount -->
+                                        <!--<DataGridTextColumn Header="Packed Amount" Width="auto" IsReadOnly="False" Binding="{Binding DispatchOrderItem.PackedQty,StringFormat=\{0:c\}, Mode=TwoWay}"  >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Right" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>-->
+                                        <!-- Shipped Qty -->
+                                        <!--<DataGridTextColumn Binding="{Binding DispatchOrderItem.DispatchQty,StringFormat=\{0:c\}}" Width="auto" IsReadOnly="True" Header="Shipped Amount" >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Right" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>-->
+                                        <!--View/Edit-->
+                                        <DataGridTemplateColumn>
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="VIEW" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="30" HorizontalContentAlignment="Left" Margin="0,0,0,0" Command="{Binding DataContext.ViewUpdateCancelOrderCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}" ToolTip="View/Update/Cancel order">
+                                                        <Button.Style>
+                                                            <Style TargetType="{x:Type Button}">
+                                                                <Setter Property="Background" Value="#666666"/>
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                                <Setter Property="FontSize" Value="12"/>
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="{x:Type Button}">
+                                                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="Sales Notes" TabIndex="4" Margin="30,0,-30,-2" >
+                            <Grid>
+                                <Label Content="New Note" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,16,0,0" Width="104" FontWeight="Bold" />
+                                <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CustomerNote}" VerticalAlignment="Top" TextAlignment="Left" Margin="10,46,0,0" Width="491" Height="260" Padding="0,3,0,0" TabIndex="5" Background="#e0e0e0" AcceptsReturn="True"  />
+
+                                <Button Content="ADD NOTE" HorizontalAlignment="Left" VerticalAlignment="Top" Width="62" Height="26" HorizontalContentAlignment="Left" Margin="441,311,0,0" Command="{Binding AddNewNoteCommand}" ToolTip="Add new note" TabIndex="16"  >
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Background" Value="#666666"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="FontSize" Value="8"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#4c4c4c"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                                <Label Content="Previous Notes" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="500,16,0,0" Width="98" FontWeight="Bold" />
+                                <ListView x:Name="prevNotes" Margin="505,46,0,10" ItemsSource="{Binding CustomerNotes,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Background="#e0e0e0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Single" ItemContainerStyle="{StaticResource alternatingListViewItemStyle}" AlternationCount="2" Focusable="False">
+
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <TextBlock Text="{Binding DisplayString,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListView>
+                            </Grid>
+                        </TabItem>
+                        <!--<TabItem Header="Credit Details" TabIndex="4" IsEnabled="{Binding IsCreditTabEnabled}" Margin="30,0,-30,-2" >-->
+                        <TabItem Header="Admin Notes" TabIndex="5"  Margin="30,0,-30,-2" IsEnabled="{Binding IsAdminTabEnabled}">
+                            <TextBox TextWrapping="Wrap" Text="{Binding AdminNote.Note,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}" VerticalAlignment="Top" TextAlignment="Left" Margin="10,10,10,0" Height="260" Padding="0,3,0,0" TabIndex="5" Background="#e0e0e0" AcceptsReturn="True"  />
+                        </TabItem>
+                        <TabItem Header="Credit Details" TabIndex="6"  Margin="30,0,-30,-2" IsEnabled="{Binding IsCreditTabEnabled}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="433*"/>
+                                    <ColumnDefinition Width="437*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="Credit Limit" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12,38,0,0" Width="85"/>
+                                <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CreditLimit,StringFormat=\{0:c\}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextAlignment="Right" Margin="114,38,0,0" Width="105" Height="26" Padding="0,3,0,0" TabIndex="1" IsReadOnly="True" />
+                                <Label Content="Credit Remaining" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12,65,0,0" Width="103"/>
+                                <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CreditRemaining,StringFormat=\{0:c\}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextAlignment="Right" Margin="114,65,0,0" Width="105" Height="26" Padding="0,3,0,0" TabIndex="1" IsReadOnly="True" />
+                                <!--<Label Content="Debt" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12,118,0,0" Width="85"/>
+                                <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Debt,StringFormat=\{0:c\}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextAlignment="Right" Margin="114,119,0,0" Width="105" Height="26" Padding="0,3,0,0" TabIndex="1" IsReadOnly="True" />-->
+                                <Label Content="Total Released" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12,118,0,0" Width="92"/>
+                                <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding TotalReleased, Mode=TwoWay,StringFormat=\{0:c\}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextAlignment="Right" Margin="114,119,0,0" Width="105" Height="26" Padding="0,3,0,0" TabIndex="1" IsReadOnly="True" />
+                                <Label Content="Last Order Date" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12,144,0,0" Width="94"/>
+                                <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding LastOrderDate, Mode=TwoWay, StringFormat=dd/MM/yyyy, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextAlignment="Right" Margin="114,146,0,0" Width="105" Height="26" Padding="0,3,0,0" TabIndex="1" IsReadOnly="True" />
+                                <CheckBox Content="Stop Credit" Margin="113,174,0,0" Foreground="Black" FontWeight="SemiBold" Height="21" VerticalAlignment="Top" HorizontalAlignment="Left" Width="106" IsChecked="{Binding IsStopCredit,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsStopCreditEnabled}"  />
+                                <Label Content="Stop Credit" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12,168,0,0" Width="94"/>
+                                <Label Content="Credit Owed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12,91,0,0" Width="85"/>
+                                <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding CreditOwed, Mode=TwoWay, StringFormat=\{0:c\}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextAlignment="Right" Margin="114,92,0,0" Width="105" Height="26" Padding="0,3,0,0" TabIndex="1" IsReadOnly="True" />
+
+                                <Button Content="UPDATE CREDIT" HorizontalAlignment="Left" VerticalAlignment="Top" Width="73" Height="26" HorizontalContentAlignment="Left" Margin="238,38,0,0" Command="{Binding UpdateCustomerCreditCommand}" ToolTip="Update customer credit" TabIndex="36"  Visibility="{Binding UpdateCreditVisibility}" IsEnabled="{Binding IsCreditUpdateBtnEnable}" >
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Background" Value="{Binding AddCreditBackground}"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="FontSize" Value="8"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#4c4c4c"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="ADD CREDIT" HorizontalAlignment="Left" VerticalAlignment="Top" Width="73" Height="26" HorizontalContentAlignment="Left" Margin="238,38,0,0" Command="{Binding AddNewCustomerCreditCommand}" ToolTip="Add customer credit" TabIndex="16" IsEnabled="{Binding CreditEnabled}"  Visibility="{Binding AddNewCustomerCreditVisibility}"  >
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="Background" Value="{Binding AddCreditBackground}"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="FontSize" Value="8"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#4c4c4c"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                            </Grid>
+                        </TabItem>
+                        <!--<TabItem Header="Credit History" TabIndex="5" IsEnabled="{Binding IsCreditHistoryTabEnabled}" Margin="30,0,-30,-2" >-->
+                        <TabItem Header="Credit History" TabIndex="7"  Margin="30,0,-30,-2" IsEnabled="{Binding IsCreditHistoryTabEnabled}" >
+                            <Grid>
+                                <DataGrid x:Name="dgCreditHistory"  BorderBrush="#FFE0E0E0" HorizontalGridLinesBrush="#FF9C9C9C" VerticalGridLinesBrush="#FF9C9C9C" HorizontalScrollBarVisibility="Disabled" FontFamily="Verdana" IsReadOnly="True" ItemsSource="{Binding CustomerCreditActivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" Background="#e1e9f7" CanUserAddRows="False"   TabIndex="7" BorderThickness="0" Margin="0,10,0,30" >
+                                    <DataGrid.Resources>
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"  Color="#FF8F8F8F"/>
+                                    </DataGrid.Resources>
+
+                                    <DataGrid.Columns>
+                                        <!-- Customer Name -->
+                                        <DataGridTextColumn Header="Customer Name" Width="auto" IsReadOnly="False" Binding="{Binding Customer.CompanyName, Mode=TwoWay}">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                    <Setter Property="ToolTip" Value="Desired shipping date" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Left" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                    <Setter Property="ToolTip" Value="Desired shipping date" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+
+                                        <!-- Sales Order No -->
+                                        <DataGridTextColumn Header="Sales No" Width="auto" IsReadOnly="False" Binding="{Binding SalesOrderNo, Mode=TwoWay}"  >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Right" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!-- Amount -->
+                                        <DataGridTextColumn Header="Amount" Width="auto" Binding="{Binding Amount, Mode=TwoWay,StringFormat=C}">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Right" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!--<DataGridTemplateColumn Header="Amount" Width="auto" IsReadOnly="True"  >
+                                            <DataGridTemplateColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTemplateColumn.HeaderStyle>
+                                            
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <currency:CurrencyTextBox  Number="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" FontSize="13" FontWeight="Medium" Padding="5" TextAlignment="Right" IsReadOnly="True" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>-->
+
+                                        <!-- Type -->
+                                        <DataGridTextColumn Header="Type" Width="auto" IsReadOnly="False" Binding="{Binding Type, Mode=TwoWay}" >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Left" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+
+                                        <!-- Updated Time -->
+                                        <DataGridTextColumn Header="Updated Date/Time" Width="auto" IsReadOnly="False" Binding="{Binding UpdatedDate, Mode=TwoWay}" >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                    <Setter Property="ToolTip" Value="Qty reserved" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Right" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                    <Setter Property="ToolTip" Value="Qty reserved" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!-- Updated By -->
+                                        <DataGridTextColumn Binding="{Binding UpdatedBy}" Width="auto" IsReadOnly="True" Header="Updated By"  >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                    <Setter Property="ToolTip" Value="Qty remaining" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Left" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                    <Setter Property="ToolTip" Value="Qty remaining" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <!-- Activity -->
+                                        <DataGridTextColumn Header="Activity" Width="auto" IsReadOnly="False" Binding="{Binding Activity, Mode=TwoWay}" >
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Padding" Value="5" />
+                                                    <Setter Property="TextAlignment" Value="Left" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="FontWeight" Value="Medium" />
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                    </TabControl>
+
+
+
+                    <Button Content="NEW CUSTOMER" HorizontalAlignment="Right" VerticalAlignment="Top" Width="73" Height="26" HorizontalContentAlignment="Left" Margin="0,1,11,0" Command="{Binding AddNewCustomerCommand}" ToolTip="Add new customer" TabIndex="16"  Visibility="{Binding NewCustomerVisibility}" >
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#666666"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="8"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Content="CANCEL NEW CUSTOMER" HorizontalAlignment="Right" VerticalAlignment="Top" Width="107" Height="26" HorizontalContentAlignment="Left" Margin="0,1,11,0" Command="{Binding CancelNewCustomerCommand}" ToolTip="Cancel adding new customer" TabIndex="16" Visibility="{Binding CancelNewCustomerVisibility}" >
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#666666"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="8"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Label Content="*" Foreground="red" FontSize="16" FontWeight="Bold" Margin="550,21,0,0" VerticalAlignment="Top" Padding="0" Height="13" HorizontalAlignment="Left" Width="9"/>
+                    <Button Content="SEARCH" HorizontalAlignment="Left" VerticalAlignment="Top" Width="53" Height="22" HorizontalContentAlignment="Left" Margin="561,29,0,0" Command="{Binding SearchCustomerCommand}" ToolTip="Search details" TabIndex="36" Visibility="{Binding SearchBtnVisibility}" >
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#666666"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="10"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Content="Edit Company Name" HorizontalAlignment="Left" VerticalAlignment="Top" Width="85" Height="16" HorizontalContentAlignment="Left" Margin="466,11,0,0" Command="{Binding EditCompanyNameCommand}" ToolTip="Click this button if you need to modify Company Name and click UPDATE button to save" TabIndex="16" Visibility="{Binding EditCompanyNameVisibility}" >
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#666666"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="8"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Content="Cancel Edit" HorizontalAlignment="Left" VerticalAlignment="Top" Width="85" Height="16" HorizontalContentAlignment="Left" Margin="466,11,0,0" Command="{Binding CancelEditCompanyNameCommand}" ToolTip="Click this button if you need to cancel modifying Company Name" TabIndex="16" Visibility="{Binding CancelEditCompanyNameVisibility}" >
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#666666"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="8"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <!--<Button Content="CLEAR" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="62" Height="24" HorizontalContentAlignment="Left" Margin="0,0,69,4" Command="{Binding ClearCommand}" ToolTip="Receive order" TabIndex="16">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#666666"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>-->
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Browse" TabIndex="1" Margin="2,0,-6,-2" IsEnabled="{Binding BrowseTabEnabled}">
+                <Grid Margin="50,8,50,0">
+                    <TextBlock VerticalAlignment="Top" Padding="1" Text="Company Name"  TextWrapping="Wrap" Foreground="Black" TextAlignment="Left"  Height="17" FontWeight="SemiBold" HorizontalAlignment="Left" Width="111" FontFamily="Arial" Margin="0,6,0,0" />
+                    <ComboBox x:Name="cmbCompanyName" 
+							    IsTextSearchEnabled="True"
+							    TabIndex="0"  
+							    IsEditable="True"        	
+							    ItemsSource="{Binding CustomerList, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+							    DisplayMemberPath="CompanyName"  
+							    SelectedValuePath="CompanyName" 
+                                SelectedItem="{Binding SelectedSearchCustomer, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"  
+							    Foreground="Black" FontFamily="Verdana" Height="26 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="280" Margin="109,2,0,0" SelectionChanged="cmbProducts_SelectionChanged" Background="#FFE1E9F7"   />
+
+                    <Button Content="SEARCH" HorizontalAlignment="Left" VerticalAlignment="Top" Width="56" Height="26" HorizontalContentAlignment="Left" Margin="213,109,0,0" Command="{Binding SearchCommand}" ToolTip="Search" TabIndex="16" >
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#666666"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Content="CLEAR" HorizontalAlignment="Left" VerticalAlignment="Top" Width="56" Height="26" HorizontalContentAlignment="Left" Margin="267,109,0,0" Command="{Binding ClearSearchCommand}" ToolTip="Clear search field" TabIndex="16" >
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#666666"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#4c4c4c"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <DataGrid x:Name="dgOpenSalesOrders"  BorderBrush="#FFE0E0E0" HorizontalGridLinesBrush="#FF9C9C9C" VerticalGridLinesBrush="#FF9C9C9C" HorizontalScrollBarVisibility="Auto" FontFamily="Verdana" IsReadOnly="True" ItemsSource="{Binding SearchedCustomers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" Background="#e0e0e0" CanUserAddRows="False"   TabIndex="7" BorderThickness="0" Margin="0,141,0,30"  >
+                        <DataGrid.Resources>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"  Color="#FF8F8F8F"/>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Company Name" Width="auto" IsReadOnly="True" Binding="{Binding CompanyName, Mode=TwoWay}">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Left" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <!--<DataGridTextColumn Header="Customer Name" Width="auto" IsReadOnly="True" Binding="{Binding FirstName1, Mode=TwoWay}">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Left" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>-->
+
+                            <DataGridTextColumn Header="Account Type" Width="auto" IsReadOnly="True" Binding="{Binding CustomerType, Mode=TwoWay}">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Primary Business" Width="auto" IsReadOnly="True" Binding="{Binding PrimaryBusiness.CategoryName, Mode=TwoWay}">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Left" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="State" Width="auto" IsReadOnly="True" Binding="{Binding CompanyState, Mode=TwoWay}">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Left" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Telephone" Width="auto" IsReadOnly="True" Binding="{Binding CompanyTelephone, Mode=TwoWay}">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Left" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Email" Width="200" IsReadOnly="True" Binding="{Binding CompanyEmail, Mode=TwoWay}">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Left" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                        <Setter Property="TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <!-- Desired Receiving Date -->
+                            <!--<DataGridTextColumn Header="Ship Address" Width="200" IsReadOnly="True" Binding="{Binding ShipAddress}"  >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Left" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                        <Setter Property="TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>-->
+                            <!-- Supplier -->
+                            <!--<DataGridTextColumn Header="Ship City" Width="auto" IsReadOnly="True" Binding="{Binding ShipCity, Mode=TwoWay}"  >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Left" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>-->
+                            <!-- Status -->
+                            <!--<DataGridTextColumn Header="Ship State" Width="auto" IsReadOnly="True" Binding="{Binding ShipState, Mode=TwoWay}"  >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>-->
+                            <!-- Days -->
+                            <!--<DataGridTextColumn Header="Ship Postcode" Width="auto" IsReadOnly="True" Binding="{Binding ShipPostCode, Mode=TwoWay}"  >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Padding" Value="5" />
+                                        <Setter Property="TextAlignment" Value="Center" />
+                                        <Setter Property="FontSize" Value="13" />
+                                        <Setter Property="FontWeight" Value="Medium" />
+
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>-->
+                            <!-- VIEW/UPDATE -->
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="VIEW/EDIT" HorizontalAlignment="Center" VerticalAlignment="Center" Width="110" Height="30" HorizontalContentAlignment="Left" Margin="0,0,0,0" Command="{Binding DataContext.EditCustomerCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}" ToolTip="View/Edit customer details">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Setter Property="Background" Value="#666666"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                    <Setter Property="FontSize" Value="11"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#4c4c4c"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock VerticalAlignment="Top" Padding="1" Text="Contact Person"  TextWrapping="Wrap" Foreground="Black" TextAlignment="Left"  Height="17" FontWeight="SemiBold" HorizontalAlignment="Left" Width="112" FontFamily="Arial" Margin="0,33,0,0" />
+                    <ComboBox x:Name="cmbContactName" 
+							    IsTextSearchEnabled="True"
+							    TabIndex="1"  
+							    IsEditable="True"        	
+							    ItemsSource="{Binding ContactPersonList, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 							  
+                                SelectedItem="{Binding SelectedFirstName, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"  
+							    Foreground="Black" FontFamily="Verdana" Height="26 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="280" Margin="109,29,0,0" SelectionChanged="cmbProducts_SelectionChanged" Background="#FFE1E9F7"   />
+                    <TextBlock VerticalAlignment="Top" Padding="1" Text="Primary Business"  TextWrapping="Wrap" Foreground="Black" TextAlignment="Left"  Height="17" FontWeight="SemiBold" HorizontalAlignment="Left" Width="110" FontFamily="Arial" Margin="0,60,0,0" />
+                    <ComboBox x:Name="cmbSearchCategory" 
+							    IsTextSearchEnabled="True"
+							    TabIndex="2"  
+							    IsEditable="True"        	
+							    ItemsSource="{Binding Categories, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+							    DisplayMemberPath="CategoryName"  
+							    SelectedValuePath="CategoryName" 
+                                SelectedItem="{Binding SelectedSearchCategory, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"  
+							    Foreground="Black" FontFamily="Verdana" Height="26 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="280" Margin="109,56,0,0" SelectionChanged="cmbProducts_SelectionChanged" Background="#FFE1E9F7"  />
+                    <TextBlock VerticalAlignment="Top" Padding="1" Text="Suburb"  TextWrapping="Wrap" Foreground="Black" TextAlignment="Left"  Height="17" FontWeight="SemiBold" HorizontalAlignment="Left" Width="109" FontFamily="Arial" Margin="0,88,0,0" />
+                    <ComboBox x:Name="cmbSuburb" 
+							    IsTextSearchEnabled="True"
+							    TabIndex="3"  
+							    IsEditable="True"        	
+							    ItemsSource="{Binding Suburb, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+							    SelectedItem="{Binding SelectedSuburb, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"  
+							    Foreground="Black" FontFamily="Verdana" Height="26 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="280" Margin="109,83,0,0" SelectionChanged="cmbProducts_SelectionChanged" Background="#FFE1E9F7"   />
+                    <TextBlock VerticalAlignment="Top" Padding="1" Text="State"  TextWrapping="Wrap" Foreground="Black" TextAlignment="Left"  Height="17" FontWeight="SemiBold" HorizontalAlignment="Left" Width="109" FontFamily="Arial" Margin="0,114,0,0" />
+                    <ComboBox 
+								TabIndex="4"  
+								IsEditable="False"   
+								SelectedValuePath="Content"
+								Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="109,110,0,0" Height="23" VerticalAlignment="Top" SelectedValue="{Binding SelectedState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="102" >
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="Background" Value="#e1e9f7"/>
+                                <Setter Property="BorderBrush" Value="#e1e9f7"/>
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                        <ComboBoxItem Content="QLD" />
+                        <ComboBoxItem Content="NSW" />
+                        <ComboBoxItem Content="VIC" />
+                        <ComboBoxItem Content="WA" />
+                        <ComboBoxItem Content="SA" />
+                        <ComboBoxItem Content="NT" />
+                        <ComboBoxItem Content="TAS" />
+                        <ComboBoxItem Content="ACT" />
+                        <ComboBoxItem Content="OTHER" />
+                    </ComboBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <Button Content="ADD CUSTOMER" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="106" Height="24" HorizontalContentAlignment="Left" Margin="0,0,72,10" Command="{Binding AddNewCustomerDBCommand}" ToolTip="Add new customer" TabIndex="36" Visibility="{Binding AddCommandVisibility}" >
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <Button Content="CLOSE" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="62" Height="24" HorizontalContentAlignment="Left" Margin="0,0,10,10" Command="{Binding ClosePopUpViewCommand}" ToolTip="Close form" TabIndex="3" Visibility="{Binding CloseBtnVisible}">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <Button Content="UPDATE" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="106" Height="24" HorizontalContentAlignment="Left" Margin="0,0,72,10" Command="{Binding UpdateCommand}" ToolTip="Update customer" TabIndex="16" Visibility="{Binding UpdateCommandVisibility}" >
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+
+        <Button Content="CLOSE" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="62" Height="24" HorizontalContentAlignment="Left" Margin="0,0,10,10" Command="{Binding CloseCommandNormal}" TabIndex="24" ToolTip="Close form" Visibility="{Binding CloseNormlVisibility}">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <TextBlock Background="#c33333" Foreground="White" Padding="0,3,0,0" Margin="0,10,0,0" TextWrapping="Wrap" Text="CUSTOMER" TextAlignment="Center" FontWeight="Bold" FontSize="16" FontFamily="Arial" Height="23" VerticalAlignment="Top"/>
+
+        <!--<Border x:Name="childWindow" Visibility="{Binding WindowVisibility}" Background="#88000000" RenderTransformOrigin="0.5,0.5" >
+            <ContentControl Content="{Binding XmlContent}"  HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+        </Border>-->
+    </Grid>
+</UserControl>

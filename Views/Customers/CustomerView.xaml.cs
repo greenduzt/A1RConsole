@@ -1,0 +1,43 @@
+﻿using A1RConsole.Models.Customers;
+using A1RConsole.ViewModels.Customers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace A1RConsole.Views.Customers
+{
+    /// <summary>
+    /// Interaction logic for CustomerView.xaml
+    /// </summary>
+    public partial class CustomerView : UserControl
+    {
+        public CustomerView(CustomerPending cp)
+        {
+            InitializeComponent();
+            DataContext = new CustomerViewModel(cp);
+        }
+
+        public CustomerView()
+        {
+            InitializeComponent();
+            //DataContext = new CustomerViewModel();
+        }
+
+        private void cmbProducts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            listView.Items.Refresh();
+        }
+
+    }
+}

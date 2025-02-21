@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="A1RConsole.Views.Formulas.ShowFormulaView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ns="clr-namespace:A1RConsole.Core"
+             mc:Ignorable="d" 
+             Height="1050" Width="785">
+    <Grid Background="White">
+        <!--<WebBrowser Source="{Binding FormulaName}" Margin="10,33,10,10" />-->
+        <WebBrowser ns:WebBrowserUtility.BindableSource="{Binding FormulaName}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+            ScrollViewer.VerticalScrollBarVisibility="Disabled" Margin="50,37,51,19" />
+        <Button Command="{Binding CloseCommand}" Content="X" FontWeight="ExtraBold" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right" Width="29"/>
+    </Grid>
+</UserControl>

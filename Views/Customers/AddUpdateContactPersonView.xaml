@@ -1,0 +1,112 @@
+﻿<UserControl x:Class="A1RConsole.Views.Customers.AddUpdateContactPersonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"       
+             xmlns:TextBehaviors="clr-namespace:A1RConsole.Core"
+             mc:Ignorable="d" 
+             d:DesignHeight="250" MinHeight="250" MinWidth="450" d:DesignWidth="450">
+    <Grid Background="White">
+        <TextBlock Background="#FF938F8F" Foreground="White" Padding="0,4,0,0" Margin="0,10,0,0" TextWrapping="Wrap" Text="{Binding HeaderText}" TextAlignment="Center" FontWeight="Bold" FontSize="14" FontFamily="Verdana" Height="26" VerticalAlignment="Top"/>
+        <Button Content="CLOSE" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="60" Height="24" HorizontalContentAlignment="Left" Command="{Binding CloseCommand}"  ToolTip="Close this form" Margin="0,0,4,4">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <TextBlock Text="Contact Name" TextAlignment="Right" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="39,75,0,0" Width="97"/>
+        <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ContactPerson.ContactPersonName}" VerticalAlignment="Top" TextAlignment="Left" Margin="141,70,0,0" Width="257" Height="26" Padding="0,3,0,0" Background="#e1e9f7"   />
+        <TextBlock Text="Phone 1" TextAlignment="Right" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="39,103,0,0" Width="97"/>
+        <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ContactPerson.PhoneNumber1}" VerticalAlignment="Top" TextAlignment="Left" Margin="141,98,0,0" Width="101" Height="26" Padding="0,3,0,0" Background="#e1e9f7">
+            
+        </TextBox>
+        <TextBlock Text="Phone 2" TextAlignment="Right" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="39,131,0,0" Width="97"/>
+        <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ContactPerson.PhoneNumber2}" VerticalAlignment="Top" TextAlignment="Left" Margin="141,126,0,0" Width="101" Height="26" Padding="0,3,0,0" Background="#e1e9f7">
+          
+        </TextBox>
+        <TextBlock Text="E-Mail" TextAlignment="Right" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="39,159,0,0" Width="97"/>
+        <TextBox  HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding ContactPerson.Email}" VerticalAlignment="Top" TextAlignment="Left" Margin="141,154,0,0" Width="257" Height="26" Padding="0,3,0,0" Background="#e1e9f7"  />
+        <Button Content="ADD" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="60" Height="24" HorizontalContentAlignment="Left" Command="{Binding AddCommand}"  ToolTip="Add new contact person" Margin="0,0,62,4" Visibility="{Binding AddCommandVisibility}">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <Button Content="UPDATE" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="60" Height="24" HorizontalContentAlignment="Left" Command="{Binding UpdateCommand}"  ToolTip="Edit contact person" Margin="0,0,62,4" Visibility="{Binding UpdateCommandVisibility}">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <TextBlock Text="Active" TextAlignment="Right" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="39,183,0,0" Width="97"/>
+        <ComboBox 
+								TabIndex="4"  
+								IsEditable="False"   
+								SelectedValuePath="Content"
+								Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="141,182,0,0" Height="23" VerticalAlignment="Top" SelectedValue="{Binding SelectedActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="102" IsEnabled="{Binding ActiveEnabled}">
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Background" Value="#e1e9f7"/>
+                    <Setter Property="BorderBrush" Value="#e1e9f7"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+            <ComboBoxItem Content="Yes" />
+            <ComboBoxItem Content="No" />            
+        </ComboBox>
+    </Grid>
+</UserControl>

@@ -1,0 +1,1534 @@
+﻿using A1RConsole.ViewModel.Productions.Peeling;
+using A1RConsole.Core;
+using A1RConsole.Models.Capacity;
+using A1RConsole.Models.Categories;
+using A1RConsole.Models.Comments;
+using A1RConsole.Models.Customers;
+using A1RConsole.Models.Discounts;
+using A1RConsole.Models.Dispatch;
+using A1RConsole.Models.Formulas;
+using A1RConsole.Models.Freights;
+using A1RConsole.Models.Invoices;
+using A1RConsole.Models.Machines;
+using A1RConsole.Models.Meta;
+using A1RConsole.Models.Orders;
+using A1RConsole.Models.Production;
+using A1RConsole.Models.Production.Grading;
+using A1RConsole.Models.Production.Mixing;
+using A1RConsole.Models.Production.Peeling;
+using A1RConsole.Models.Production.ReRolling;
+using A1RConsole.Models.Production.Slitting;
+using A1RConsole.Models.Products;
+using A1RConsole.Models.RawMaterials;
+using A1RConsole.Models.Shifts;
+using A1RConsole.Models.Stock;
+using A1RConsole.Models.Transactions;
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using A1RConsole.Models.Suppliers;
+using System.Globalization;
+using A1RConsole.ViewModels.Products;
+using A1RConsole.ViewModels.Stock;
+using A1RConsole.Models.Purchasing;
+using A1RConsole.Models.Users;
+using A1RConsole.Models.Quoting;
+
+
+namespace A1RConsole.DB
+{
+    public static class DBAccess
+    {
+
+        public static T CheckNull<T>(object obj)
+        {
+            return (obj == DBNull.Value ? default(T) : (T)obj);
+
+        }
+
+        static bool TimeBetween(DateTime datetime, TimeSpan start, TimeSpan end)
+        {
+            // convert datetime to a TimeSpan
+            TimeSpan now = datetime.TimeOfDay;
+            // see if start comes before end
+            if (start < end)
+                return start <= now && now <= end;
+            // start is after end, so do the inverse comparison
+            return !(end < now && now < start);
+        }
+
+        public static List<UserPosition> GetAllUserPositions(string position)
+        {
+            List<UserPosition> userPositions = new List<UserPosition>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                conn.Open();
+                try
+                {
+                    SqlCommand cmdGetData = new SqlCommand("SELECT UserPositions.id,UserPositions.position, " +
+                                                           "Users.ID,Users.Username,Users.FirstName,Users.LastName,Users.State " +
+                                                           "FROM UserPositions " +
+                                                           "INNER JOIN Users ON UserPositions.user_id = Users.ID " +
+                                                           "WHERE UserPositions.position=@PositionName ORDER BY Users.FirstName", conn);
+
+                    cmdGetData.Parameters.AddWithValue("@PositionName", position);
+                    using (SqlDataReader dr = cmdGetData.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                UserPosition up = new UserPosition();
+                                up.ID = Convert.ToInt16(dr["id"]);
+                                up.Position = dr["position"].ToString();
+                                up.User = new User() { ID = Convert.ToInt16(dr["ID"]), Username = dr["Username"].ToString(), FirstName = dr["FirstName"].ToString(), LastName = dr["LastName"].ToString(), State = dr["State"].ToString() };
+                                up.FullName = dr["FirstName"].ToString() + " " + dr["LastName"].ToString();
+                                userPositions.Add(up);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    Debug.WriteLine("Error reading System Parameter: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return userPositions;
+        }
+
+        public static ObservableCollection<DiscountStructure> GetDiscountStructureByCustomerID(int cusId)
+        {
+            ObservableCollection<DiscountStructure> list = new ObservableCollection<DiscountStructure>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+
+                    conn.Open();
+                    SqlCommand cmdGetId = new SqlCommand("SELECT Discount.id,Discount.customer_id,Discount.category_id,Discount.Discount,Discount.comment,Discount.updated_by,Discount.updated_date,Discount.time_stamp, " +
+	                                                     "Category.category_name,Category.category_document_path " +
+                                                         "FROM Discount " +
+                                                         "INNER JOIN Category ON Discount.category_id = Category.id " +
+                                                         "WHERE customer_id =@CustomerID", conn);
+
+                    cmdGetId.Parameters.AddWithValue("@CustomerID", cusId);
+                    using (SqlDataReader dr = cmdGetId.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                string vis = "Collapsed";
+                                if (Convert.ToInt16(dr["category_id"]) != 0)
+                                    {                                       
+                                        if (Convert.ToInt16(dr["category_id"]) == 3)
+                                        {
+                                            if (Convert.ToInt16(dr["Discount"]) == 60 || Convert.ToInt16(dr["Discount"]) == 58)
+                                            {
+                                                vis = "Visible";
+                                            }
+                                        }
+                                    }
+                                
+                                    DiscountStructure d = new DiscountStructure();
+                                    d.ID = Convert.ToInt32(dr["id"]);
+                                    d.CustomerID = Convert.ToInt16(dr["customer_id"]);
+                                    d.Category = new Category() { CategoryID = Convert.ToInt16(dr["category_id"]), CategoryName = dr["category_name"].ToString(), DocumentPath = dr["category_document_path"].ToString() };
+                                    d.Discount = Convert.ToInt16(dr["Discount"]);
+                                    d.UpdatedBy = dr["updated_by"].ToString();
+                                    d.UpdatedDate =Convert.ToDateTime(dr["updated_date"]);
+                                    d.TimeStamp = Convert.ToBase64String(dr["time_stamp"] as byte[]);
+                                    d.DiscountLabelVisibility = vis;                                   
+
+                                    list.Add(d);
+                            }
+                        }
+                    }
+
+
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading customer details: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return list;
+        }
+
+        public static ObservableCollection<Customer> GetCustomerData()
+        {
+
+            ObservableCollection<Customer> list = new ObservableCollection<Customer>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmdGetId = new SqlCommand("SELECT Customers.id,Customers.customer_type,Customers.company_name, ISNULL(Discount.category_id,0) AS category_id,ISNULL(Category.category_name,'') AS category_name,Category.category_document_path,ISNULL(Discount.discount,0) As Discount,Discount.time_stamp AS DisTimeStamp, " +
+                                                             "Customers.company_address,Customers.company_city,Customers.company_state,Customers.company_postcode,Customers.company_country,Customers.company_email,Customers.company_telephone,Customers.company_fax, " +
+                                                             "Customers.designation1,Customers.first_name1,Customers.last_name1,Customers.telephone1,Customers.mobile1,Customers.fax1,Customers.email1, " +
+                                                             "Customers.designation2,Customers.first_name2,Customers.last_name2,Customers.telephone2,Customers.mobile2,Customers.fax2,Customers.email2, " +
+                                                             "Customers.designation3,Customers.first_name3,Customers.last_name3,Customers.telephone3,Customers.mobile3,Customers.fax3,Customers.email3, " +
+                                                             "Customers.ship_address,Customers.ship_city,Customers.ship_state,Customers.ship_postcode,Customers.ship_country,Customers.credit_limit,Customers.credit_remaining,Customers.debt,Customers.credit_owed,Customers.last_updated_by,Customers.last_updated_datetime,Customers.active,Customers.time_stamp,Customers.stop_credit, " +
+                                                             "Customers.primary_business,(SELECT p.category_name FROM Category p WHERE p.id = Customers.primary_business) AS primary_business_Cat " +
+                                                             "FROM Customers " +
+                                                             "LEFT JOIN Discount ON Customers.id=Discount.customer_id " +
+                                                             "LEFT JOIN Category ON Discount.category_id = Category.id " +
+                                                             "WHERE Customers.primary_business IS NOT NULL " +
+                                                             "ORDER BY Customers.company_name", conn);
+
+
+
+
+
+                    using (SqlDataReader dr = cmdGetId.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                if (list.Count == 0)
+                                {
+                                    Customer customer = new Customer();
+                                    customer.CustomerId = Convert.ToInt16(dr["id"]);
+                                    customer.CustomerType = dr["customer_type"].ToString();
+                                    customer.CompanyName = dr["company_name"].ToString();
+                                    customer.CompanyAddress = dr["company_address"].ToString();
+                                    customer.CompanyCity = dr["company_city"].ToString();
+                                    customer.CompanyState = dr["company_state"].ToString();
+                                    customer.CompanyPostCode = dr["company_postcode"].ToString();
+                                    customer.CompanyCountry = dr["company_country"].ToString();
+                                    customer.CompanyEmail = dr["company_email"].ToString();
+                                    customer.CompanyTelephone = dr["company_telephone"].ToString();
+                                    customer.CompanyFax = dr["company_fax"].ToString();
+                                    customer.Designation1 = dr["designation1"].ToString();
+                                    customer.FirstName1 = dr["first_name1"].ToString();
+                                    customer.LastName1 = dr["last_name1"].ToString();
+                                    customer.Telephone1 = dr["telephone1"].ToString();
+                                    customer.Mobile1 = dr["mobile1"].ToString();
+                                    customer.Email1 = dr["email1"].ToString();
+                                    customer.Fax1 = dr["fax1"].ToString();
+                                    customer.Designation2 = dr["designation2"].ToString();
+                                    customer.FirstName2 = dr["first_name2"].ToString();
+                                    customer.LastName2 = dr["last_name2"].ToString();
+                                    customer.Telephone2 = dr["telephone2"].ToString();
+                                    customer.Mobile2 = dr["mobile2"].ToString();
+                                    customer.Email2 = dr["email2"].ToString();
+                                    customer.Fax2 = dr["fax2"].ToString();
+                                    customer.Designation3 = dr["designation3"].ToString();
+                                    customer.FirstName3 = dr["first_name3"].ToString();
+                                    customer.LastName3 = dr["last_name3"].ToString();
+                                    customer.Telephone3 = dr["telephone3"].ToString();
+                                    customer.Mobile3 = dr["mobile3"].ToString();
+                                    customer.Email3 = dr["email3"].ToString();
+                                    customer.Fax3 = dr["fax3"].ToString();
+                                    customer.CreditLimit = CheckNull<decimal>(dr["credit_limit"]);
+                                    customer.CreditRemaining = CheckNull<decimal>(dr["credit_remaining"]);
+                                    customer.Debt = CheckNull<decimal>(dr["debt"]);
+                                    customer.CreditOwed = CheckNull<decimal>(dr["credit_owed"]);
+                                    //customer.CustomerCreditHistory = new CustomerCreditHistory() { CreditRemaining = Convert.ToDecimal(dr["credit_remaining"]) };
+                                    customer.ShipAddress = dr["ship_address"].ToString();
+                                    customer.ShipCity = dr["ship_city"].ToString();
+                                    customer.ShipState = dr["ship_state"].ToString();
+                                    customer.ShipPostCode = dr["ship_postcode"].ToString();
+                                    customer.ShipCountry = dr["ship_country"].ToString();
+                                    customer.LastUpdatedBy = dr["last_updated_by"].ToString();
+                                    customer.LastUpdatedDateTime = CheckNull<DateTime>(dr["last_updated_datetime"]);
+                                    customer.Active = Convert.ToBoolean(dr["active"]);
+                                    customer.StopCredit = dr["stop_credit"].ToString();
+                                    customer.TimeStamp = Convert.ToBase64String(dr["time_stamp"] as byte[]);
+                                    customer.DiscountStructure = new ObservableCollection<DiscountStructure>() { };
+                                    customer.PrimaryBusiness = new Category();
+                                    customer.PrimaryBusiness.CategoryID = Convert.ToInt16(dr["primary_business"]);
+                                    customer.PrimaryBusiness.CategoryName = dr["primary_business_Cat"].ToString();
+                                    if (Convert.ToInt16(dr["category_id"]) != 0)
+                                    {
+                                        string vis = "Collapsed";
+                                        if (Convert.ToInt16(dr["category_id"]) == 3)
+                                        {
+                                            if (Convert.ToInt16(dr["Discount"]) == 60 || Convert.ToInt16(dr["Discount"]) == 58)
+                                            {
+                                                vis = "Visible";
+                                            }
+                                        }
+                                        customer.DiscountStructure.Add(new DiscountStructure() { CustomerID = Convert.ToInt16(dr["id"]), Category = new Category() { CategoryName = dr["category_name"].ToString(), CategoryID = Convert.ToInt16(dr["category_id"]), DocumentPath = dr["category_document_path"].ToString() }, Discount = Convert.ToInt16(dr["Discount"]), DiscountLabelVisibility = vis, TimeStamp = Convert.ToBase64String(dr["DisTimeStamp"] as byte[]) });
+                                    }
+                                    list.Add(customer);
+                                }
+                                else
+                                {
+                                    bool f = list.Any(x => x.CustomerId == Convert.ToInt16(dr["id"]));
+                                    if (f)
+                                    {
+                                        for (int i = 0; i < list.Count; i++)
+                                        {
+                                            if (list[i].CustomerId == Convert.ToInt16(dr["id"]))
+                                            {
+                                                string vis = "Collapsed";
+                                                if (Convert.ToInt16(dr["category_id"]) == 3)
+                                                {
+                                                    if (Convert.ToInt16(dr["Discount"]) == 60 || Convert.ToInt16(dr["Discount"]) == 58)
+                                                    {
+                                                        vis = "Visible";
+                                                    }
+                                                }
+                                                list[i].DiscountStructure.Add(new DiscountStructure() { CustomerID = Convert.ToInt16(dr["id"]), Category = new Category() { CategoryName = dr["category_name"].ToString(), CategoryID = Convert.ToInt16(dr["category_id"]), DocumentPath = dr["category_document_path"].ToString() }, Discount = Convert.ToInt16(dr["Discount"]), DiscountLabelVisibility = vis, TimeStamp = Convert.ToBase64String(dr["DisTimeStamp"] as byte[]) });
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Customer customer = new Customer();
+                                        customer.CustomerId = Convert.ToInt16(dr["id"]);
+                                        customer.CustomerType = dr["customer_type"].ToString();
+                                        customer.CompanyName = dr["company_name"].ToString();
+                                        customer.CompanyAddress = dr["company_address"].ToString();
+                                        customer.CompanyCity = dr["company_city"].ToString();
+                                        customer.CompanyState = dr["company_state"].ToString();
+                                        customer.CompanyPostCode = dr["company_postcode"].ToString();
+                                        customer.CompanyCountry = dr["company_country"].ToString();
+                                        customer.CompanyEmail = dr["company_email"].ToString();
+                                        customer.CompanyTelephone = dr["company_telephone"].ToString();
+                                        customer.CompanyFax = dr["company_fax"].ToString();
+                                        customer.Designation1 = dr["designation1"].ToString();
+                                        customer.FirstName1 = dr["first_name1"].ToString();
+                                        customer.LastName1 = dr["last_name1"].ToString();
+                                        customer.Telephone1 = dr["telephone1"].ToString();
+                                        customer.Mobile1 = dr["mobile1"].ToString();
+                                        customer.Email1 = dr["email1"].ToString();
+                                        customer.Fax1 = dr["fax1"].ToString();
+                                        customer.Designation2 = dr["designation2"].ToString();
+                                        customer.FirstName2 = dr["first_name2"].ToString();
+                                        customer.LastName2 = dr["last_name2"].ToString();
+                                        customer.Telephone2 = dr["telephone2"].ToString();
+                                        customer.Mobile2 = dr["mobile2"].ToString();
+                                        customer.Email2 = dr["email2"].ToString();
+                                        customer.Fax2 = dr["fax2"].ToString();
+                                        customer.Designation3 = dr["designation3"].ToString();
+                                        customer.FirstName3 = dr["first_name3"].ToString();
+                                        customer.LastName3 = dr["last_name3"].ToString();
+                                        customer.Telephone3 = dr["telephone3"].ToString();
+                                        customer.Mobile3 = dr["mobile3"].ToString();
+                                        customer.Email3 = dr["email3"].ToString();
+                                        customer.Fax3 = dr["fax3"].ToString();
+                                        customer.CreditLimit = CheckNull<decimal>(dr["credit_limit"]);
+                                        customer.CreditRemaining = CheckNull<decimal>(dr["credit_remaining"]);
+                                        customer.Debt = CheckNull<decimal>(dr["debt"]);
+                                        customer.CreditOwed = CheckNull<decimal>(dr["credit_owed"]);
+                                        //customer.CustomerCreditHistory = new CustomerCreditHistory() { CreditRemaining = Convert.ToDecimal(dr["credit_remaining"]) };
+                                        customer.ShipAddress = dr["ship_address"].ToString();
+                                        customer.ShipCity = dr["ship_city"].ToString();
+                                        customer.ShipState = dr["ship_state"].ToString();
+                                        customer.ShipPostCode = dr["ship_postcode"].ToString();
+                                        customer.ShipCountry = dr["ship_country"].ToString();
+                                        customer.LastUpdatedBy = dr["last_updated_by"].ToString();
+                                        customer.LastUpdatedDateTime = CheckNull<DateTime>(dr["last_updated_datetime"]);
+                                        customer.Active = Convert.ToBoolean(dr["active"]);
+                                        customer.StopCredit = dr["stop_credit"].ToString();
+                                        customer.TimeStamp = Convert.ToBase64String(dr["time_stamp"] as byte[]);
+                                        customer.DiscountStructure = new ObservableCollection<DiscountStructure>() { };
+                                        customer.PrimaryBusiness = new Category();
+                                        customer.PrimaryBusiness.CategoryID = Convert.ToInt16(dr["primary_business"]);
+                                        customer.PrimaryBusiness.CategoryName = dr["primary_business_Cat"].ToString();
+                                        if (Convert.ToInt16(dr["category_id"]) != 0)
+                                        {
+                                            string vis = "Collapsed";
+                                            if (Convert.ToInt16(dr["category_id"]) == 3)
+                                            {
+                                                if (Convert.ToInt16(dr["Discount"]) == 60 || Convert.ToInt16(dr["Discount"]) == 58)
+                                                {
+                                                    vis = "Visible";
+                                                }
+                                            }
+                                            customer.DiscountStructure.Add(new DiscountStructure() { CustomerID = Convert.ToInt16(dr["id"]), Category = new Category() { CategoryName = dr["category_name"].ToString(), CategoryID = Convert.ToInt16(dr["category_id"]), DocumentPath = dr["category_document_path"].ToString() }, Discount = Convert.ToInt16(dr["Discount"]), DiscountLabelVisibility = vis, TimeStamp = Convert.ToBase64String(dr["DisTimeStamp"] as byte[]) });
+                                        }
+                                        list.Add(customer);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading customer details: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return list;
+        }
+
+        public static List<Category> GetDiscounts()
+        {
+            List<Category> catList = new List<Category>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+
+                    using (SqlCommand cmdGetId = new SqlCommand("SELECT * FROM Category WHERE id <> 8 AND id <> 9", conn))
+                    {
+                        using (SqlDataReader dr = cmdGetId.ExecuteReader())
+                        {
+                            if (dr != null)
+                            {
+                                while (dr.Read())
+                                {
+                                    string str = dr["discount_structure"].ToString();
+                                    List<string> lstr = str.Split(',').ToList();
+                                    Category cat = new Category();
+                                    cat.CategoryID = Convert.ToInt16(dr["id"]);
+                                    cat.Discounts = new List<int>();
+                                    foreach (var item in lstr)
+                                    {
+                                        cat.Discounts.Add(Convert.ToInt16(item));
+                                    }
+
+                                    catList.Add(cat);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading product code: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return catList;
+        }
+
+
+        public static ObservableCollection<FreightCarrier> GetFreightData()
+        {
+            ObservableCollection<FreightCarrier> list = new ObservableCollection<FreightCarrier>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmdGetId = new SqlCommand("SELECT * FROM Freight", conn))
+                    {
+                        using (SqlDataReader dr = cmdGetId.ExecuteReader())
+                        {
+                            if (dr != null)
+                            {
+                                while (dr.Read())
+                                {
+                                    FreightCarrier freight = new FreightCarrier();
+                                    freight.Id = Convert.ToInt16(dr["ID"]);
+                                    freight.FreightName = dr["FreightName"].ToString();
+                                    //freight.FreightUnit = dr["FreightUnit"].ToString();
+                                    freight.FreightPrice = Convert.ToDecimal(dr["FreightPrice"]);
+                                    freight.FreightDescription = dr["FreightDescription"].ToString();
+                                    list.Add(freight);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading freight details: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return list;
+        }
+
+        public static ObservableCollection<Product> GetAllProds(bool withRawMateriels)
+        {
+            string sqlWhere = string.Empty;
+            if (withRawMateriels == true)
+            {
+                sqlWhere = "Products.is_raw_material ='true' OR Products.is_raw_material = 'false'";
+            }
+            else
+            {
+                sqlWhere = "Products.is_raw_material = 'false'";
+            }
+
+            ObservableCollection<Product> prodColl = new ObservableCollection<Product>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    //using (SqlCommand cmdGetData = new SqlCommand("SELECT id, category_id, raw_product_id, type, product_name, product_code, product_description, unit, price, density, thickness, width, " +
+                    //                                              "height, max_yield, min_yield, logo_path, mould_type, min_cut_length, custom_re_roll, qr_video_path, qr_pdf_path, active " +
+                    //                                              "FROM Products WHERE active = 'true' " +
+                    //                                              "UNION " +
+                    //                                              "SELECT RawProductID,0 AS category_id,RawProductID,RawProductType AS type,RawProductName,RawProductCode,Description, UPPER(RawProductType), " +
+                    //                                              "Cost,'n/a' AS density,0 AS thickness,0 AS width,0 AS height,0 AS max_yield,0 AS min_yield, " +
+                    //                                              "'' AS logo_path,'' AS mould_type,0 AS min_cut_length,0 AS custom_re_roll,'' AS qr_video_path, '' AS qr_pdf_path,1 as active FROM RawProducts where RawProductType <> 'kg' AND RawProductType <> 'pallet' AND RawProductType <> 'box' ORDER BY product_code", conn))
+                    using (SqlCommand cmdGetData = new SqlCommand("SELECT Products.id, Products.category_id,Category.category_name, Products.raw_product_id, Products.type,Products.commodity_code, Products.product_name, Products.product_code, Products.product_description, Products.unit,Products.is_manufactured,Products.is_purchased, " +
+                                                                  "Products.material_cost,Products.units_per_package,Products.unit_cost,Products.unit_price,Products.minimum_order_qty,Products.orders_in_multiples_of,Products.safety_stock_qty,Products.order_point, " +
+                                                                  "Products.is_manufactured,Products.is_purchased,Products.last_modified_by,Products.last_modified_date,Products.is_auto_order,Products.active,Products.material_cost, " +
+                                                                  "RawProducts.RawProductCode,RawProducts.RawProductName,RawProducts.Description,RawProducts.RawProductType " +
+                                                                  "FROM Products " +
+                                                                  "INNER JOIN Category ON Products.category_id = Category.id " +
+                                                                  "LEFT JOIN RawProducts ON Products.raw_product_id = RawProducts.RawProductID " +
+                                                                  "WHERE Products.active = 'true' AND " + sqlWhere + " ORDER BY Products.product_code", conn))
+                    {
+                        using (SqlDataReader dr = cmdGetData.ExecuteReader())
+                        {
+                            if (dr != null)
+                            {
+                                while (dr.Read())
+                                {
+                                    Product prod = new Product();
+
+                                    prod.ProductID = Convert.ToInt16(dr["id"]);
+                                    prod.Category = new Category() { CategoryID = Convert.ToInt16(dr["category_id"]), CategoryName = dr["category_name"].ToString() };
+                                    prod.CommodityCode = dr["commodity_code"].ToString();
+                                    prod.RawProduct = new RawProduct()
+                                    {
+                                        RawProductID = Convert.ToInt16(dr["raw_product_id"]),
+                                        RawProductCode = dr["product_code"].ToString(),
+                                        RawProductName = dr["product_name"].ToString(),
+                                        Description = dr["product_description"].ToString(),
+                                        RawProductType = dr["unit"].ToString()
+                                    };
+                                    prod.IsPurchased = Convert.ToBoolean(dr["is_purchased"]);
+                                    prod.IsManufactured = Convert.ToBoolean(dr["is_manufactured"]);
+                                    prod.Type = dr["type"].ToString();
+                                    prod.ProductCode = dr["product_code"].ToString();
+                                    prod.ProductName = dr["product_name"].ToString();
+                                    prod.ProductDescription = dr["product_description"].ToString();
+                                    prod.ProductUnit = dr["unit"].ToString();
+                                    prod.UnitsPerPack = Convert.ToDecimal(dr["units_per_package"]);
+                                    prod.UnitCost = Convert.ToDecimal(dr["unit_cost"]);
+                                    prod.UnitPrice = Convert.ToDecimal(dr["unit_price"]);
+                                    prod.MaterialCost = Convert.ToDecimal(dr["material_cost"]);
+                                    prod.Active = Convert.ToBoolean(dr["active"]);
+                                    prodColl.Add(prod);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading production line: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return prodColl;
+
+        }
+
+        public static ObservableCollection<FreightCode> GetFreightCodes()
+        {
+            ObservableCollection<FreightCode> fcList = new ObservableCollection<FreightCode>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+
+                    using (SqlCommand cmdGetData = new SqlCommand("SELECT * FROM FreightCodes ORDER BY code", conn))
+                    {
+                        using (SqlDataReader dr = cmdGetData.ExecuteReader())
+                        {
+                            if (dr != null)
+                            {
+                                while (dr.Read())
+                                {
+                                    FreightCode fc = new FreightCode();
+                                    fc.ID = Convert.ToInt16(dr["id"]);
+                                    fc.Code = dr["code"].ToString();
+                                    fc.Description = dr["description"].ToString();
+                                    fc.Unit = dr["unit"].ToString();
+                                    fc.Price = Convert.ToDecimal(dr["price"]);
+                                    fc.PriceEnabled = Convert.ToInt16(dr["id"]) == 50 ? true : false;
+                                    fcList.Add(fc);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading ProductStock: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return fcList;
+        }
+
+        public static List<ProductStock> GetProductStockByStock(int location)
+        {
+            List<ProductStock> psList = new List<ProductStock>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+
+                    using (SqlCommand cmdGetData = new SqlCommand("SELECT ProductStock.id AS ProductStockID,ProductStock.product_id,ProductStock.qty_available,ProductStock.last_updated_date,ProductStock.updated_by,ProductStock.time_stamp, " +
+                                                                  "StockLocation.id AS StockLocationID,StockLocation.stock_name,StockLocation.address,StockLocation.suburb,StockLocation.state, " +
+                                                                  "Products.product_code,Products.product_description,Products.unit,Products.order_point,Products.unit_price " +
+                                                                  "FROM ProductStock " +
+                                                                  "INNER JOIN StockLocation ON ProductStock.stock_location_id = StockLocation.id " +
+                                                                  "INNER JOIN Products ON ProductStock.product_id = Products.id " +
+                                                                  "WHERE ProductStock.stock_location_id=@Location " +
+                                                                  "ORDER BY Products.product_code ASC", conn))
+                    {
+                        cmdGetData.Parameters.AddWithValue("@Location", location);
+                        using (SqlDataReader dr = cmdGetData.ExecuteReader())
+                        {
+                            if (dr != null)
+                            {
+                                while (dr.Read())
+                                {
+                                    ProductStock ps = new ProductStock();
+                                    ps.ID = Convert.ToInt16(dr["ProductStockID"]);
+                                    ps.StockLocation = new StockLocation() { ID = Convert.ToInt16(dr["StockLocationID"]), StockName = dr["stock_name"].ToString(), Address = dr["suburb"].ToString(), State = dr["state"].ToString() };
+                                    ps.Product = new Product() { ProductID = Convert.ToInt16(dr["product_id"]), ProductCode = dr["product_code"].ToString(), ProductDescription = dr["product_description"].ToString(), ProductUnit = dr["unit"].ToString(), OrderPoint = Convert.ToDecimal(dr["order_point"]), UnitPrice = Convert.ToDecimal(dr["unit_price"]) };
+                                    ps.QtyAvailable = Convert.ToDecimal(dr["qty_available"]);
+                                    //ps.OrderPoint = Convert.ToDecimal(dr["order_point"]);
+                                    ps.LastUpdatedDate = CheckNull<DateTime>(dr["last_updated_date"]);
+                                    ps.UpdatedBy = dr["updated_by"].ToString();
+                                    ps.TimeStamp = Convert.ToBase64String(dr["time_stamp"] as byte[]);
+                                    psList.Add(ps);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading ProductStock: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return psList;
+        }
+
+        public static List<StockLocation> GetAllStockLocations()
+        {
+            List<StockLocation> slList = new List<StockLocation>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+
+                    using (SqlCommand cmdGetData = new SqlCommand("SELECT * FROM StockLocation", conn))
+                    {
+                        using (SqlDataReader dr = cmdGetData.ExecuteReader())
+                        {
+                            if (dr != null)
+                            {
+                                while (dr.Read())
+                                {
+                                    StockLocation sl = new StockLocation();
+                                    sl.ID = Convert.ToInt16(dr["id"]);
+                                    sl.StockName = dr["stock_name"].ToString();
+                                    sl.Address = dr["address"].ToString();
+                                    sl.Suburb = dr["suburb"].ToString();
+                                    sl.State = dr["state"].ToString();
+                                    slList.Add(sl);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading ProductStock: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return slList;
+        }
+
+        
+
+        public static List<ProductStockReserved> GetReservedProductStock(SalesOrder so)
+        {
+            List<ProductStockReserved> psRList = new List<ProductStockReserved>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmdGetId = new SqlCommand("SELECT * FROM ProductStockReserved " +
+                                                                "WHERE sales_no=@SalesNo AND stock_location_id=@StockLocationID AND product_id=@ProductID", conn))
+                    {
+
+                        foreach (var item in so.SalesOrderDetails)
+                        {
+                            cmdGetId.Parameters.AddWithValue("@SalesNo", so.SalesOrderNo);
+                            cmdGetId.Parameters.AddWithValue("@StockLocationID", so.StockLocation.ID);
+                            cmdGetId.Parameters.AddWithValue("@ProductID", item.Product.ProductID);
+                            using (SqlDataReader dr = cmdGetId.ExecuteReader())
+                            {
+                                if (dr != null)
+                                {
+                                    while (dr.Read())
+                                    {
+                                        ProductStockReserved psr = new ProductStockReserved();
+                                        psr.SalesNo = Convert.ToInt32(dr["sales_no"]);
+                                        psr.StockLocation = new StockLocation() { ID = Convert.ToInt16(dr["stock_location_id"]) };
+                                        psr.Product = new Product() { ProductID = Convert.ToInt16(dr["product_id"]) };
+                                        psr.QtyOrdered = Convert.ToDecimal(dr["qty_ordered"]);
+                                        psr.QtyReserved = Convert.ToDecimal(dr["qty_reserved"]);
+                                        psr.QtyRemaining = Convert.ToDecimal(dr["qty_remaining"]);
+                                        psr.ReservedDate = Convert.ToDateTime(dr["reserved_date"]);
+                                        psr.Status = dr["status"].ToString();
+                                        psr.ActivityDate = Convert.ToDateTime(dr["activity_date"]);
+                                        psRList.Add(psr);
+                                    }
+                                }
+                            }
+                            cmdGetId.Parameters.Clear();
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading customer details: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return psRList;
+        }
+
+        public static CustomerCreditHistory GetCustomerCreditHistoryRecord(Int32 salesNo, int cusId)
+        {
+            CustomerCreditHistory cch = new CustomerCreditHistory();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmdGetId = new SqlCommand("SELECT * FROM CustomerCreditSalesOrder " +
+                                                                "WHERE sales_order_no=@SalesOrderNo AND customer_id =@CustomerID", conn))
+                    {
+                        cmdGetId.Parameters.AddWithValue("@SalesOrderNo", salesNo);
+                        cmdGetId.Parameters.AddWithValue("@CustomerID", cusId);
+                        using (SqlDataReader dr = cmdGetId.ExecuteReader())
+                        {
+                            if (dr != null)
+                            {
+                                while (dr.Read())
+                                {
+                                    cch.Customer = new Customer() { CustomerId = Convert.ToInt16(dr["customer_id"]) };
+                                    cch.SalesOrderNo = Convert.ToInt32(dr["sales_order_no"]);
+                                    cch.CreditLimit = Convert.ToDecimal(dr["credit_limit"]);
+                                    cch.CreditDeducted = Convert.ToDecimal(dr["credit_deducted"]);
+                                    cch.CreditRemaining = Convert.ToDecimal(dr["credit_remaining"]);
+                                    cch.Debt = Convert.ToDecimal(dr["debt"]);
+                                    cch.CreditAdded = Convert.ToDecimal(dr["credit_added"]);
+                                    cch.UpdatedDate = Convert.ToDateTime(dr["updated_date"]);
+                                    cch.UpdatedBy = (dr["updated_by"]).ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading customer details: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return cch;
+        }
+
+        public static SalesOrder GetSalesOrderDetails(Int32 salesNo)
+        {
+            SalesOrder salesOrder = new SalesOrder();
+            ObservableCollection<SalesOrderDetails> salesOrderDetails = new ObservableCollection<SalesOrderDetails>();
+            BindingList<FreightDetails> freightDetails = new BindingList<FreightDetails>();
+            DispatchOrder dispatchOrder = new DispatchOrder();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                SqlCommand cmdGetData = new SqlCommand("SELECT SalesOrder.sales_no,SalesOrder.order_date,SalesOrder.order_priority,SalesOrder.customer_order_no,SalesOrder.dispatch_date,SalesOrder.order_priority,SalesOrder.order_status,SalesOrder.ship_to,SalesOrder.bill_to,SalesOrder.last_modified_date,SalesOrder.terms_id,SalesOrder.pickup_time,SalesOrder.list_price_total,SalesOrder.total_amount,SalesOrder.gst,SalesOrder.payment_recieved,SalesOrder.sales_made_by,SalesOrder.payment_due_date,SalesOrder.freight_total,SalesOrder.gst_enabled, " +
+                                                        "Customers.id AS CusID,Customers.company_name,Customers.customer_type, " +
+                                                        "StockLocation.id AS StockLocationID,StockLocation.stock_name, " +
+                                                        "PrePaidCustomers.prepaid_customer_name, " +
+                                                        "Freight.FreightName " +
+                                                        "FROM SalesOrder " +
+                                                        "LEFT JOIN Customers ON SalesOrder.customer_id = Customers.id " +
+                                                        "INNER JOIN StockLocation ON SalesOrder.stock_location = StockLocation.id " +
+                                                        "INNER JOIN PrePaidCustomers ON SalesOrder.sales_no = PrePaidCustomers.sales_no " +
+                                                        "INNER JOIN Freight ON SalesOrder.freight_id = Freight.ID " +
+                                                        "WHERE SalesOrder.sales_no = @SalesNo", conn);
+
+                SqlCommand cmdGetSalesItems = new SqlCommand("SELECT SalesOrderDetails.sales_no,SalesOrderDetails.order_line,SalesOrderDetails.line_status,SalesOrderDetails.qty,SalesOrderDetails.discount,SalesOrderDetails.total, " +
+                                                                "Products.id AS pID,Products.product_code,Products.product_description,Products.category_id,Products.unit,Products.unit_price " +
+                                                                "FROM SalesOrderDetails " +
+                                                                "INNER JOIN Products ON SalesOrderDetails.product_id = Products.id " +
+                                                                "WHERE sales_no = @SalesNo", conn);
+
+                SqlCommand cmdGetFreightDetails = new SqlCommand("SELECT FreightDetails.id,FreightDetails.freight_code_id,FreightDetails.description,FreightDetails.pallets,FreightDetails.price,FreightDetails.total AS FreightTotal, " +
+                                                                    "FreightCodes.code,FreightCodes.description,FreightCodes.unit " +
+                                                                    "FROM FreightDetails " +
+                                                                    "INNER JOIN FreightCodes ON FreightDetails.freight_code_id = FreightCodes.id " +
+                                                                    "WHERE FreightDetails.order_no = @SalesNo", conn);
+
+                SqlCommand cmdGetDispatchOrder = new SqlCommand("SELECT * FROM DispatchOrders " +
+                                                                "WHERE sales_no=@SalesNo", conn);
+
+                SqlCommand cmdGetInvoiceNo = new SqlCommand("SELECT id FROM Invoice WHERE sales_order_no=@SalesOrderNo", conn);
+
+                //Get Comments
+                SqlCommand cmdGetComments = new SqlCommand("SELECT * FROM Comments WHERE no=@SalesNo AND (location_id=7 OR location_id=8)", conn);
+
+                SqlTransaction trans = null;
+                conn.Open();
+                trans = conn.BeginTransaction();
+
+                cmdGetData.Transaction = trans;
+                cmdGetData.Parameters.AddWithValue("@SalesNo", salesNo);
+                try
+                {
+                    using (SqlDataReader dr = cmdGetData.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                salesOrder.SalesOrderNo = Convert.ToInt32(dr["sales_no"]);
+                                salesOrder.OrderDate = Convert.ToDateTime(dr["order_date"]);
+                                salesOrder.OrderPriority = Convert.ToInt16(dr["order_priority"]);
+                                if (!DBNull.Value.Equals(dr["CusID"]))
+                                {
+                                    salesOrder.Customer = new Customer() { CustomerId = Convert.ToInt16(dr["CusID"]), CompanyName = dr["company_name"].ToString(), CustomerType = dr["customer_type"].ToString() };
+                                }
+                                else
+                                {
+                                    salesOrder.PrepaidCustomerName = dr["prepaid_customer_name"].ToString();
+                                    salesOrder.Customer = new Customer() { CustomerId = 0, CustomerType = "Prepaid" };
+                                }
+                                salesOrder.StockLocation = new StockLocation() { ID = Convert.ToInt16(dr["StockLocationID"]), StockName = dr["stock_name"].ToString() };
+                                salesOrder.CustomerOrderNo = dr["customer_order_no"].ToString();
+                                salesOrder.DesiredDispatchDate = Convert.ToDateTime(dr["dispatch_date"]);
+                                salesOrder.OrderStatus = dr["order_status"].ToString();
+                                salesOrder.OrderPriority = Convert.ToInt16(dr["order_priority"]);
+                                salesOrder.ShipTo = dr["ship_to"].ToString();
+                                salesOrder.BillTo = dr["bill_to"].ToString();
+                                salesOrder.LastModifiedDate = Convert.ToDateTime(dr["last_modified_date"]);
+                                salesOrder.FreightCarrier = new FreightCarrier() { FreightName = dr["FreightName"].ToString() };
+                                salesOrder.TermsID = dr["terms_id"].ToString();
+                                salesOrder.PickupTime = dr["pickup_time"].ToString();
+                                salesOrder.ListPriceTotal = Convert.ToDecimal(dr["list_price_total"]);
+                                salesOrder.TotalAmount = Convert.ToDecimal(dr["total_amount"]);
+                                salesOrder.FreightTotal = Convert.ToDecimal(dr["freight_total"]);
+                                salesOrder.GST = Convert.ToDecimal(dr["gst"]);
+                                salesOrder.GSTEnabled = Convert.ToBoolean(dr["gst_enabled"]);
+                                salesOrder.PaymentRecieved = Convert.ToBoolean(dr["payment_recieved"]);
+                                salesOrder.SalesMadeBy = dr["sales_made_by"].ToString();
+                                salesOrder.PaymentDueDate = Convert.ToDateTime(dr["payment_due_date"]);
+
+                            }
+                        }
+                    }
+                    cmdGetSalesItems.Transaction = trans;
+                    cmdGetSalesItems.Parameters.AddWithValue("@SalesNo", salesNo);
+                    using (SqlDataReader dr = cmdGetSalesItems.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+
+                                SalesOrderDetails sod = new SalesOrderDetails();
+                                sod.OrderLine = Convert.ToInt16(dr["order_line"]);
+                                sod.LineStatus = dr["line_status"].ToString();
+                                sod.Product = new Product() { ProductID = Convert.ToInt16(dr["pID"]), ProductCode = dr["product_code"].ToString(), ProductDescription = dr["product_description"].ToString(), ProductUnit = dr["unit"].ToString(), UnitPrice = Convert.ToDecimal(dr["unit_price"]), Category = new Category() { CategoryID = Convert.ToInt16(dr["category_id"]) } };
+                                sod.Quantity = Convert.ToDecimal(dr["qty"]);
+                                sod.Discount = Convert.ToInt16(dr["discount"]);
+
+                                salesOrderDetails.Add(sod);
+                            }
+                        }
+                    }
+
+                    salesOrder.SalesOrderDetails = salesOrderDetails;
+
+                    cmdGetFreightDetails.Transaction = trans;
+                    cmdGetFreightDetails.Parameters.AddWithValue("@SalesNo", salesNo);
+                    using (SqlDataReader dr = cmdGetFreightDetails.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+
+                                FreightDetails fd = new FreightDetails();
+                                fd.Pallets = Convert.ToDecimal(dr["pallets"]);
+                                fd.FreightCodeDetails = new FreightCode() { ID = Convert.ToInt32(dr["id"]), FreightCodeID = Convert.ToInt16(dr["freight_code_id"]), Code = dr["code"].ToString(), Description = dr["description"].ToString(), Unit = dr["unit"].ToString(), Price = Convert.ToDecimal(dr["price"]), FreightTotal = Convert.ToDecimal(dr["FreightTotal"]) };
+                                freightDetails.Add(fd);
+                            }
+                        }
+                    }
+
+                    salesOrder.SalesOrderDetails = salesOrderDetails;
+                    salesOrder.FreightDetails = freightDetails;
+
+                    cmdGetDispatchOrder.Transaction = trans;
+                    cmdGetDispatchOrder.Parameters.AddWithValue("@SalesNo", salesNo);
+                    using (SqlDataReader dr = cmdGetDispatchOrder.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                dispatchOrder.SalesOrderNo = Convert.ToInt32(dr["sales_no"]);
+                                dispatchOrder.DeliveryDocketNo = Convert.ToInt32(dr["delivery_docket_no"]);
+                                dispatchOrder.ConNoteNumber = dr["con_note_number"].ToString();
+                                dispatchOrder.OrderDispatched = Convert.ToBoolean(dr["order_dispatched"]);
+                                dispatchOrder.DispatchedDate = CheckNull<DateTime>(dr["dispatched_date"]);
+                                dispatchOrder.OrderStatus = dr["order_status"].ToString();
+                                dispatchOrder.IsProcessing = Convert.ToBoolean(dr["is_processing"]);
+                                dispatchOrder.CompletedDateTime = CheckNull<DateTime>(dr["completed_date_time"]);
+                            }
+                        }
+                    }
+                    //Comments
+                    salesOrder.Comments = new List<Comment>();
+
+                    cmdGetComments.Transaction = trans;
+                    cmdGetComments.Parameters.AddWithValue("@SalesNo", salesNo);
+                    using (SqlDataReader dr = cmdGetComments.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                salesOrder.Comments.Add(new Comment() { LocationID = Convert.ToInt16(dr["location_id"]), Note = dr["comment"].ToString() });
+                            }
+                        }
+                    }
+                    salesOrder.DispatchOrder = new DispatchOrder();
+                    salesOrder.DispatchOrder = dispatchOrder;
+
+                    cmdGetInvoiceNo.Transaction = trans;
+                    cmdGetInvoiceNo.Parameters.AddWithValue("@SalesOrderNo", salesNo);
+                    salesOrder.Invoice = new Invoice();
+                    salesOrder.InvoiceNo = Convert.ToInt32(cmdGetInvoiceNo.ExecuteScalar());
+
+                    trans.Commit();
+                }
+                catch (Exception e)
+                {
+                    trans.Rollback();
+                    Debug.WriteLine("Error reading System Parameter: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return salesOrder;
+        }
+
+        public static ObservableCollection<SalesOrderDetails> GetSalesOrderDetailsBySalesNo(Invoice inv)
+        {
+            ObservableCollection<SalesOrderDetails> sodList = new ObservableCollection<SalesOrderDetails>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+
+                    using (SqlCommand cmdGetData = new SqlCommand("SELECT SalesOrderDetails.sales_no,SalesOrderDetails.order_line,SalesOrderDetails.qty,SalesOrderDetails.discount,SalesOrderDetails.total, " +
+                                                                  "Products.id,Products.product_code,Products.product_description,Products.unit,Products.unit_price FROM SalesOrderDetails " +
+                                                                  "INNER JOIN Products ON SalesOrderDetails.product_id = Products.id " +
+                                                                  "WHERE sales_no=@SalesNo", conn))
+                    {
+                        cmdGetData.Parameters.AddWithValue("@SalesNo", inv.SalesOrderNo);
+                        using (SqlDataReader dr = cmdGetData.ExecuteReader())
+                        {
+                            if (dr != null)
+                            {
+                                while (dr.Read())
+                                {
+                                    SalesOrderDetails sod = new SalesOrderDetails();
+                                    sod.OrderLine = Convert.ToInt16(dr["order_line"]);
+                                    sod.Product = new Product() { ProductID = Convert.ToInt32(dr["id"]), ProductCode = dr["product_code"].ToString(), ProductDescription = dr["product_description"].ToString(), ProductUnit = dr["unit"].ToString(), UnitPrice = Convert.ToDecimal(dr["unit_price"]) };
+                                    sod.Quantity = Convert.ToDecimal(dr["qty"]);
+                                    sod.Discount = Convert.ToInt16(dr["discount"]);
+                                    sod.Total = Convert.ToDecimal(dr["total"]); ;
+                                    sodList.Add(sod);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading ProductStock: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return sodList;
+        }
+
+        public static List<Tuple<string, Int16, string>> GetUpdateSalesOrderTimeStamp(Int32 id)
+        {
+            List<Tuple<string, Int16, string>> timeStamps = new List<Tuple<string, Int16, string>>();
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                SqlCommand cmdGetSalesOrderTimeStamp = new SqlCommand("SELECT time_stamp FROM SalesOrder " +
+                                                                     "WHERE sales_no=@SalesNo", conn);
+
+                SqlCommand cmdGetSalesOrderDetailsTimeStamp = new SqlCommand("SELECT product_id,time_stamp FROM SalesOrderDetails " +
+                                                                             "WHERE sales_no=@SalesNo", conn);
+
+                SqlCommand cmdGetFreightDetailsTimeStamp = new SqlCommand("SELECT id,time_stamp FROM FreightDetails " +
+                                                                             "WHERE order_no=@SalesNo", conn);
+
+                SqlCommand cmdGetCommentsTimeStamp = new SqlCommand("SELECT id,time_stamp FROM Comments " +
+                                                                    "WHERE prefix =@Prefix AND no=@SalesNo", conn);
+
+                SqlCommand cmdGetProductStockReservedTimeStamp = new SqlCommand("SELECT product_id,time_stamp FROM ProductStockReserved " +
+                                                                                "WHERE sales_no=@SalesNo AND stock_location_id=@StockLocationID", conn);
+
+                SqlTransaction trans = null;
+                conn.Open();
+                trans = conn.BeginTransaction();
+                try
+                {
+
+                    cmdGetSalesOrderTimeStamp.Transaction = trans;
+                    cmdGetSalesOrderTimeStamp.Parameters.AddWithValue("@SalesNo", id);
+                    using (SqlDataReader dr = cmdGetSalesOrderTimeStamp.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                timeStamps.Add(Tuple.Create("SO", (Int16)0, Convert.ToBase64String(dr["time_stamp"] as byte[])));
+                            }
+                        }
+                    }
+
+                    cmdGetSalesOrderDetailsTimeStamp.Transaction = trans;
+                    cmdGetSalesOrderDetailsTimeStamp.Parameters.AddWithValue("@SalesNo", id);
+                    using (SqlDataReader dr = cmdGetSalesOrderDetailsTimeStamp.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                timeStamps.Add(Tuple.Create("SOD", Convert.ToInt16(dr["product_id"]), Convert.ToBase64String(dr["time_stamp"] as byte[])));
+                            }
+                        }
+                    }
+
+                    cmdGetFreightDetailsTimeStamp.Transaction = trans;
+                    cmdGetFreightDetailsTimeStamp.Parameters.AddWithValue("@SalesNo", id);
+                    using (SqlDataReader dr = cmdGetFreightDetailsTimeStamp.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                timeStamps.Add(Tuple.Create("FD", Convert.ToInt16(dr["id"]), Convert.ToBase64String(dr["time_stamp"] as byte[])));
+                            }
+                        }
+                    }
+
+                    cmdGetCommentsTimeStamp.Transaction = trans;
+                    cmdGetCommentsTimeStamp.Parameters.AddWithValue("@Prefix", "SO");
+                    cmdGetCommentsTimeStamp.Parameters.AddWithValue("@SalesNo", id);
+                    using (SqlDataReader dr = cmdGetCommentsTimeStamp.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                timeStamps.Add(Tuple.Create("COM", Convert.ToInt16(dr["id"]), Convert.ToBase64String(dr["time_stamp"] as byte[])));
+                            }
+                        }
+                    }
+
+                    cmdGetProductStockReservedTimeStamp.Transaction = trans;
+                    cmdGetProductStockReservedTimeStamp.Parameters.AddWithValue("@StockLocationID", 1);
+                    cmdGetProductStockReservedTimeStamp.Parameters.AddWithValue("@SalesNo", id);
+                    using (SqlDataReader dr = cmdGetProductStockReservedTimeStamp.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                timeStamps.Add(Tuple.Create("PSR", Convert.ToInt16(dr["product_id"]), Convert.ToBase64String(dr["time_stamp"] as byte[])));
+                            }
+                        }
+                    }
+
+                    trans.Commit();
+                }
+                catch (Exception e)
+                {
+                    trans.Rollback();
+                    Debug.WriteLine("SQL UPDATE COMMAND ERROR OCCURED :  Updating Orders table" + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return timeStamps;
+        }
+
+        public static List<Tuple<string, Int16, string>> GetDispatchOrderTimeStamp(Int32 id)
+        {
+            List<Tuple<string, Int16, string>> timeStamps = new List<Tuple<string, Int16, string>>();
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+
+                SqlCommand cmdGetSalesOrderTimeStamp = new SqlCommand("SELECT time_stamp FROM SalesOrder " +
+                                                                      "WHERE sales_no=@SalesNo", conn);
+
+                SqlCommand cmdGetSalesOrderDetailsTimeStamp = new SqlCommand("SELECT product_id,time_stamp FROM SalesOrderDetails " +
+                                                                             "WHERE sales_no=@SalesNo", conn);
+
+                SqlCommand cmdGetDispatchOrderTimeStamp = new SqlCommand("SELECT time_stamp FROM DispatchOrders " +
+                                                                         "WHERE sales_no=@SalesNo", conn);
+
+                SqlCommand cmdGetDispatchOrderItemTimeStamp = new SqlCommand("SELECT product_id,time_stamp FROM DispatchOrderItem " +
+                                                                             "WHERE sales_no=@SalesNo", conn);
+
+                SqlTransaction trans = null;
+                conn.Open();
+                trans = conn.BeginTransaction();
+                try
+                {
+                    cmdGetDispatchOrderTimeStamp.Transaction = trans;
+                    cmdGetDispatchOrderTimeStamp.Parameters.AddWithValue("@SalesNo", id);
+                    using (SqlDataReader dr = cmdGetDispatchOrderTimeStamp.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                timeStamps.Add(Tuple.Create("DO", (Int16)0, Convert.ToBase64String(dr["time_stamp"] as byte[])));
+                            }
+                        }
+                    }
+
+                    cmdGetSalesOrderTimeStamp.Transaction = trans;
+                    cmdGetSalesOrderTimeStamp.Parameters.AddWithValue("@SalesNo", id);
+                    using (SqlDataReader dr = cmdGetSalesOrderTimeStamp.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                timeStamps.Add(Tuple.Create("SO", (Int16)0, Convert.ToBase64String(dr["time_stamp"] as byte[])));
+                            }
+                        }
+                    }
+
+                    cmdGetSalesOrderDetailsTimeStamp.Transaction = trans;
+                    cmdGetSalesOrderDetailsTimeStamp.Parameters.AddWithValue("@SalesNo", id);
+                    using (SqlDataReader dr = cmdGetSalesOrderDetailsTimeStamp.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                timeStamps.Add(Tuple.Create("SOD", Convert.ToInt16(dr["product_id"]), Convert.ToBase64String(dr["time_stamp"] as byte[])));
+                            }
+                        }
+                    }
+                    cmdGetDispatchOrderItemTimeStamp.Transaction = trans;
+                    cmdGetDispatchOrderItemTimeStamp.Parameters.AddWithValue("@SalesNo", id);
+                    using (SqlDataReader dr = cmdGetDispatchOrderItemTimeStamp.ExecuteReader())
+                    {
+                        if (dr != null)
+                        {
+                            while (dr.Read())
+                            {
+                                timeStamps.Add(Tuple.Create("DOI", Convert.ToInt16(dr["product_id"]), Convert.ToBase64String(dr["time_stamp"] as byte[])));
+                            }
+                        }
+                    }
+                    trans.Commit();
+                }
+                catch (Exception e)
+                {
+                    trans.Rollback();
+                    Debug.WriteLine("SQL UPDATE COMMAND ERROR OCCURED :  Updating Orders table" + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+            }
+            return timeStamps;
+        }
+
+        public static OrderStatus CheckWhichAreaHadOrder(SalesOrder so)
+        {
+            OrderStatus name = OrderStatus.None;
+            bool active = false;
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+
+                SqlCommand cmdCheckWarehouse = new SqlCommand("SELECT is_active FROM WarehouseOrders WHERE sales_no=@SalesNo", conn);
+                SqlCommand cmdCheckDispatch = new SqlCommand("SELECT is_active FROM DispatchOrders WHERE sales_no=@SalesNo", conn);
+                SqlCommand cmdCheckInvoice = new SqlCommand("SELECT is_active FROM Invoice WHERE sales_order_no=@SalesNo", conn);
+                SqlCommand cmdCheckSalesOrder = new SqlCommand("SELECT order_status FROM SalesOrder WHERE sales_no=@SalesNo", conn);
+
+
+                try
+                {
+                    conn.Open();
+
+                    string orderStatus = string.Empty;
+                    cmdCheckSalesOrder.Parameters.AddWithValue("@SalesNo", so.SalesOrderNo);
+                    using (SqlDataReader dr = cmdCheckSalesOrder.ExecuteReader())
+                    {
+                        if (dr.HasRows)
+                        {
+                            while (dr.Read())
+                            {
+                                orderStatus = (dr["order_status"]).ToString();
+                            }
+                        }
+                    }
+
+                    if (orderStatus == OrderStatus.Dispatched.ToString())
+                    {
+                        name = OrderStatus.Dispatched;
+                    }
+                    else
+                    {
+                        cmdCheckWarehouse.Parameters.AddWithValue("@SalesNo", so.SalesOrderNo);
+                        using (SqlDataReader dr = cmdCheckWarehouse.ExecuteReader())
+                        {
+                            if (dr.HasRows)
+                            {
+                                while (dr.Read())
+                                {
+                                    active = Convert.ToBoolean(dr["is_active"]);
+                                    name = OrderStatus.InWarehouse;
+                                }
+                            }
+                        }
+
+                        if (active == false)
+                        {
+                            cmdCheckDispatch.Parameters.AddWithValue("@SalesNo", so.SalesOrderNo);
+                            using (SqlDataReader dr = cmdCheckDispatch.ExecuteReader())
+                            {
+                                if (dr.HasRows)
+                                {
+                                    while (dr.Read())
+                                    {
+                                        active = Convert.ToBoolean(dr["is_active"]);
+                                        name = OrderStatus.FinalisingShipping;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (active == false)
+                        {
+                            cmdCheckInvoice.Parameters.AddWithValue("@SalesNo", so.SalesOrderNo);
+                            using (SqlDataReader dr = cmdCheckInvoice.ExecuteReader())
+                            {
+                                if (dr.HasRows)
+                                {
+                                    while (dr.Read())
+                                    {
+                                        active = Convert.ToBoolean(dr["is_active"]);
+                                        name = OrderStatus.PreparingInvoice;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (active == false)
+                        {
+                            name = OrderStatus.InWarehouse;
+                        }
+                    }
+
+
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error reading Product Capacity: " + e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+
+            return name;
+        }
+
+        public static Tuple<Int32, Int32> AddToSalesOrders(SalesOrder salesOrder, List<ProductStockReserved> productStockReserved, List<ProductStock> poroductStockList, Tuple<CustomerCreditHistory, CustomerCreditActivity> creditTuple)
+        {
+            Int32 salesNo = 0;
+            Int32 result = 0;
+            Int32 resultSalesOrder = 0;
+            int resultCustomerCreditHold = 0;
+            int resultCustomerCreditStockAdded = 0;
+            int resultWarehouseAdded = 0;
+            int resultCustomerCreditNoHold = 0;
+            List<int> resultFreightCodes = new List<int>();
+            List<int> resultSalesOrderDetails = new List<int>();
+            Tuple<Int32, Int32> tupResult = null;
+
+            TransactionLog Transaction = null;
+            string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            if (String.IsNullOrEmpty(userName))
+            {
+                userName = "Unknown";
+            }
+
+            using (SqlConnection conn = new SqlConnection(DBConfiguration.DbConnectionString))
+            {
+                //SalesOrder
+                SqlCommand cmdInsertOrder = new SqlCommand("INSERT INTO SalesOrder(order_date,order_priority,customer_id,freight_id,quote_no,customer_order_no,bill_to,ship_to,pickup_time,dispatch_date,terms_id,list_price_total,freight_total,total_amount,gst_enabled,gst,payment_recieved,payment_due_date,stock_location,sales_made_by,sales_completed_by,order_status,last_modified_date,last_modified_by) " +
+                                                           "VALUES (@OrderDate,@OrderPriority,@CustomerID,@FreightID,@QuoteNo,@CustomerOrderNo,@BillTo,@ShipTo,@PickUpTime,@DispatchDate,@TermsID,@ListPriceTotal,@FreightTotal,@TotalAmount,@GSTEnabled,@GST,@PaymentRecieved,@PaymentDueDate,@StockLocation,@SalesMadeBy,@SalesCompletedBy,@OrderStatus,@LastModifiedDate,@LastModifiedBy)", conn);
+
+                //Get sales id
+                SqlCommand cmdMaxSalesNo = new SqlCommand("SELECT MAX(sales_no) FROM SalesOrder", conn);
+
+                //Prepaid Customers
+                SqlCommand cmdInsertPrePaidCustomer = new SqlCommand("INSERT INTO PrePaidCustomers(sales_no,prepaid_customer_name) " +
+                                                           "VALUES (@SalesNo,@PrePaidCustomerName)", conn);
+
+                //Comments
+                SqlCommand cmdInsertComment = new SqlCommand("INSERT INTO Comments(prefix,no,location_id,comment,created_date,created_by,last_updated_date) " +
+                                                             "VALUES (@Prefix,@No,@LocationID,@Comment,@CreatedDate,@CreatedBy,@LastUpdatedDate)", conn);
+                //FreightCodes
+                SqlCommand cmdInsertFreightCodes = new SqlCommand("INSERT INTO FreightDetails(order_no,freight_code_id,description,pallets,price,total,last_updated_date,last_updated_by) " +
+                                                                  "VALUES (@SalesNo,@FreightCodeID,@Description,@Pallets,@Price,@Total,@LastUpdatedDate,@LastUpdatedBy)", conn);
+                //SalesOrderDetails
+                SqlCommand cmdInsertSalesOrderDetails = new SqlCommand("INSERT INTO SalesOrderDetails(sales_no,order_line,line_status,product_id,qty,discount,total) " +
+                                                                       "VALUES (@SalesNo,@LineNo,@LineStatus,@ProductID,@Qty,@Discount,@Total)", conn);
+
+                //WarehouseOrders
+                SqlCommand cmdInsertWarehouseOrders = new SqlCommand("INSERT INTO WarehouseOrders(sales_no,stock_location_id,order_packed,completed_by,completed_datetime,is_printed,is_active) " +
+                                                                    "VALUES (@SalesNo,@StockLocationID,@OrderPacked,@CompletedBy,@CompletedDateTime,@IsPrinted,@IsActive)", conn);
+                //WarehouseOrderItems
+                SqlCommand cmdInsertWarehouseItems = new SqlCommand("INSERT INTO WarehouseOrderItems(sales_no,product_id,order_qty,packed_qty) " +
+                                                                    "VALUES (@SalesNo,@ProductID,@OrderQty,@PackedQty)", conn);
+                //ProductStockReserved
+                SqlCommand cmdInsertPSR = new SqlCommand("INSERT INTO ProductStockReserved(sales_no,stock_location_id,product_id,qty_ordered,qty_reserved,qty_remaining,reserved_date,status,activity_date) " +
+                                                         "VALUES (@SalesNo,@StockLocationID,@ProductID,@QtyOrdered,@QtyReserved,@QtyRemaining,@ReservedDate,@Status,@ActivityDate)", conn);
+                //UpdateProductStock
+                SqlCommand cmdUpdateProductStock = new SqlCommand("UPDATE ProductStock SET qty_available=@Qty,last_updated_date=@LastUpdatedDate,updated_by=@UpdatedBy WHERE " +
+                                                        "stock_location_id=@StockLocationID AND product_id=@ProductID", conn);
+
+                //Update customer credit
+                SqlCommand cmdUpdateCustomer = new SqlCommand("UPDATE Customers SET credit_remaining=@CreditRemaining,debt=@Debt,credit_owed=@CreditOwed WHERE " +
+                                                              "id=@CustomerID", conn);
+
+                //Add to Customer credit sales order
+                SqlCommand cmdCustomerCreditSO = new SqlCommand("INSERT INTO CustomerCreditSalesOrder(customer_id,sales_order_no,credit_limit,credit_deducted,credit_remaining,debt,credit_added,updated_date,updated_by,active) " +
+                                                              "VALUES (@CustomerID,@SalesNo,@CreditLimit,@CreditDeducted,@CreditRemaining,@Debt,@CreditAdded,@UpdatedDate,@UpdatedBy,@Active)", conn);
+
+                //Add to Customer credit activity
+                SqlCommand cmdCustomerCreditActivity = new SqlCommand("INSERT INTO CustomerCreditActivity(customer_id,sales_order_no,amount,type,activity,updated_date,updated_by) " +
+                                                                      "VALUES (@CustomerID,@SalesNo,@Amount,@Type,@Activity,@UpdatedDate,@UpdatedBy)", conn);
+
+
+                SqlCommand cmdInsertProdTransactions = new SqlCommand("INSERT INTO ProductTransactions(transaction_date,qty,type,reason,sales_no,shipping_no,purchase_no,work_order_no,product_id,line_no,added_by,result) " +
+                                                                      "VALUES (@TransactionDate,@Qty,@Type,@Reason,@SalesNo,@ShippingNo,@PurchaseNo,@WorkOrderNo,@ProductID,@LineNo,@AddedBy,@Result)", conn);
+
+                //Get ProductStock TimeStamp
+                SqlCommand cmdGetProductStockTimeStamp = new SqlCommand("SELECT product_id,time_stamp FROM ProductStock WHERE stock_location_id=@StockLocationID AND product_id=@ProductID", conn);
+
+                SqlTransaction trans = null;
+                conn.Open();
+                trans = conn.BeginTransaction();
+                try
+                {
+                    List<Tuple<Int16, string>> prodStockTS = new List<Tuple<Int16, string>>();
+                    foreach (var item in poroductStockList)
+                    {
+                        cmdGetProductStockTimeStamp.Transaction = trans;
+                        cmdGetProductStockTimeStamp.Parameters.AddWithValue("@StockLocationID", 1);
+                        cmdGetProductStockTimeStamp.Parameters.AddWithValue("@ProductID", item.Product.ProductID);
+                        using (SqlDataReader dr = cmdGetProductStockTimeStamp.ExecuteReader())
+                        {
+                            if (dr != null)
+                            {
+                                while (dr.Read())
+                                {
+                                    prodStockTS.Add(Tuple.Create(Convert.ToInt16(dr["product_id"]), Convert.ToBase64String(dr["time_stamp"] as byte[])));
+                                }
+                            }
+                        }
+                        cmdGetProductStockTimeStamp.Parameters.Clear();
+                    }
+
+                    bool y = true;
+                    foreach (var item in poroductStockList)
+                    {
+                        y = prodStockTS.Any(x => x.Item1 == item.Product.ProductID && x.Item2 == item.TimeStamp);
+                        if (y == false)
+                        {
+                            break;
+                        }
+                    }
+                    if (y)
+                    {
+
+                        cmdInsertOrder.Transaction = trans;
+                        //cmdInsertOrder.Parameters.AddWithValue("@SalesNo", salesOrder.SalesOrderNo);
+                        cmdInsertOrder.Parameters.AddWithValue("@OrderDate", salesOrder.OrderDate);
+                        cmdInsertOrder.Parameters.AddWithValue("@OrderPriority", salesOrder.OrderPriority);
+                        cmdInsertOrder.Parameters.AddWithValue("@CustomerID", salesOrder.Customer.CustomerId);
+                        cmdInsertOrder.Parameters.AddWithValue("@FreightID", salesOrder.FreightCarrier.Id);
+                        cmdInsertOrder.Parameters.AddWithValue("@QuoteNo", salesOrder.QuoteNo);
+                        cmdInsertOrder.Parameters.AddWithValue("@CustomerOrderNo", salesOrder.CustomerOrderNo ?? (object)DBNull.Value);
+                        cmdInsertOrder.Parameters.AddWithValue("@BillTo", salesOrder.BillTo ?? (object)DBNull.Value);
+                        cmdInsertOrder.Parameters.AddWithValue("@ShipTo", salesOrder.ShipTo ?? (object)DBNull.Value);
+                        cmdInsertOrder.Parameters.AddWithValue("@PickUpTime", salesOrder.PickupTime ?? (object)DBNull.Value);
+                        cmdInsertOrder.Parameters.AddWithValue("@DispatchDate", salesOrder.DesiredDispatchDate);
+                        cmdInsertOrder.Parameters.AddWithValue("@TermsID", salesOrder.TermsID);
+                        cmdInsertOrder.Parameters.AddWithValue("@ListPriceTotal", salesOrder.ListPriceTotal);
+                        cmdInsertOrder.Parameters.AddWithValue("@FreightTotal", salesOrder.FreightTotal);
+                        cmdInsertOrder.Parameters.AddWithValue("@TotalAmount", salesOrder.TotalAmount);
+                        cmdInsertOrder.Parameters.AddWithValue("@GSTEnabled", salesOrder.GSTEnabled);
+                        cmdInsertOrder.Parameters.AddWithValue("@GST", salesOrder.GST);
+                        cmdInsertOrder.Parameters.AddWithValue("@PaymentRecieved", salesOrder.PaymentRecieved);
+                        cmdInsertOrder.Parameters.AddWithValue("@PaymentDueDate", salesOrder.PaymentDueDate);
+                        cmdInsertOrder.Parameters.AddWithValue("@StockLocation", salesOrder.StockLocation.ID);
+                        cmdInsertOrder.Parameters.AddWithValue("@SalesMadeBy", salesOrder.SalesMadeBy);
+                        cmdInsertOrder.Parameters.AddWithValue("@SalesCompletedBy", salesOrder.SalesCompletedBy ?? (object)DBNull.Value);
+                        cmdInsertOrder.Parameters.AddWithValue("@OrderStatus", salesOrder.OrderStatus ?? (object)DBNull.Value);
+                        cmdInsertOrder.Parameters.AddWithValue("@LastModifiedDate", salesOrder.LastModifiedDate);
+                        cmdInsertOrder.Parameters.AddWithValue("@LastModifiedBy", salesOrder.LastModifiedBy);
+                        resultSalesOrder = cmdInsertOrder.ExecuteNonQuery();
+
+                        //Get sales no
+                        cmdMaxSalesNo.Transaction = trans;
+                        salesNo = Convert.ToInt32(cmdMaxSalesNo.ExecuteScalar());
+
+                        //Prepaid customers
+                        cmdInsertPrePaidCustomer.Transaction = trans;
+                        cmdInsertPrePaidCustomer.Parameters.AddWithValue("@SalesNo", salesNo);
+                        cmdInsertPrePaidCustomer.Parameters.AddWithValue("@PrePaidCustomerName", salesOrder.Customer.CompanyName ?? (object)DBNull.Value);
+                        cmdInsertPrePaidCustomer.ExecuteNonQuery();
+
+                        //Comments
+                        foreach (var item in salesOrder.Comments)
+                        {
+                            cmdInsertComment.Transaction = trans;
+                            cmdInsertComment.Parameters.AddWithValue("@Prefix", item.Prefix);
+                            cmdInsertComment.Parameters.AddWithValue("@No", salesNo);
+                            cmdInsertComment.Parameters.AddWithValue("@LocationID", item.LocationID);
+                            cmdInsertComment.Parameters.AddWithValue("@Comment", item.Note ?? (object)DBNull.Value);
+                            cmdInsertComment.Parameters.AddWithValue("@CreatedDate", item.CreatedDate);
+                            cmdInsertComment.Parameters.AddWithValue("@CreatedBy", item.CreatedBy);
+                            cmdInsertComment.Parameters.AddWithValue("@LastUpdatedDate", item.LastUpdatedDate);
+                            cmdInsertComment.ExecuteNonQuery();
+                            cmdInsertComment.Parameters.Clear();
+                        }
+
+
+                        //FreightCodes
+                        foreach (var item in salesOrder.FreightDetails)
+                        {
+                            cmdInsertFreightCodes.Transaction = trans;
+                            cmdInsertFreightCodes.Parameters.AddWithValue("@SalesNo", salesNo);
+                            cmdInsertFreightCodes.Parameters.AddWithValue("@FreightCodeID", item.FreightCodeDetails.ID);
+                            cmdInsertFreightCodes.Parameters.AddWithValue("@Description", item.FreightCodeDetails.Description);
+                            cmdInsertFreightCodes.Parameters.AddWithValue("@Pallets", item.Pallets);
+                            cmdInsertFreightCodes.Parameters.AddWithValue("@Price", item.FreightCodeDetails.Price);
+                            cmdInsertFreightCodes.Parameters.AddWithValue("@Total", item.Total);
+                            cmdInsertFreightCodes.Parameters.AddWithValue("@LastUpdatedDate", DateTime.Now);
+                            cmdInsertFreightCodes.Parameters.AddWithValue("@LastUpdatedBy", salesOrder.LastModifiedBy);
+                            resultFreightCodes.Add(cmdInsertFreightCodes.ExecuteNonQuery());
+                            cmdInsertFreightCodes.Parameters.Clear();
+                        }
+
+                        foreach (var item in salesOrder.SalesOrderDetails)
+                        {
+                            //Sales Order Items
+                            cmdInsertSalesOrderDetails.Transaction = trans;
+                            cmdInsertSalesOrderDetails.Parameters.AddWithValue("@SalesNo", salesNo);
+                            cmdInsertSalesOrderDetails.Parameters.AddWithValue("@LineNo", item.OrderLine);
+                            cmdInsertSalesOrderDetails.Parameters.AddWithValue("@LineStatus", "Open");
+                            cmdInsertSalesOrderDetails.Parameters.AddWithValue("@ProductID", item.Product.ProductID);
+                            cmdInsertSalesOrderDetails.Parameters.AddWithValue("@Qty", item.Quantity);
+                            cmdInsertSalesOrderDetails.Parameters.AddWithValue("@Discount", item.Discount);
+                            cmdInsertSalesOrderDetails.Parameters.AddWithValue("@Total", item.Total);
+                            resultSalesOrderDetails.Add(cmdInsertSalesOrderDetails.ExecuteNonQuery());
+                            cmdInsertSalesOrderDetails.Parameters.Clear();
+
+                            //Warehouse OrderItems
+                            cmdInsertWarehouseItem

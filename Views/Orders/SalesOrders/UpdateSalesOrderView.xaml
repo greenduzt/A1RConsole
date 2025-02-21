@@ -1,0 +1,888 @@
+﻿<UserControl x:Class="A1RConsole.Views.Orders.SalesOrders.UpdateSalesOrderView"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:col="clr-namespace:System.Collections;assembly=mscorlib"
+             xmlns:DateTimeUpDown="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"          
+             xmlns:Behaviors="clr-namespace:A1RConsole.Core"
+
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+              xmlns:currency="clr-namespace:CurrencyTextBoxControl;assembly=CurrencyTextBoxControl"
+             mc:Ignorable="d" 
+             d:DesignWidth="1050" d:DesignHeight="850">
+    <UserControl.Resources>
+        <Style x:Key="TextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+        				Value="{Binding (Validation.Errors).CurrentItem.ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="alternatingStyle" TargetType="{x:Type ListViewItem}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="#ccf3ff"></Setter>
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#ccf3ff"></Setter>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Orange"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="394*"/>
+            <ColumnDefinition Width="165*"/>
+            <ColumnDefinition Width="165*"/>
+
+            <ColumnDefinition Width="145*"/>
+            <ColumnDefinition Width="181*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.ColumnSpan="3" Height="112" VerticalAlignment="Bottom" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="311*"/>
+                <ColumnDefinition Width="413*"/>
+            </Grid.ColumnDefinitions>
+            <Border Margin="6,0,1,2" Background="#e1e9f7" RenderTransformOrigin="1,1" BorderBrush="#FFC5D0EE" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" Height="105" VerticalAlignment="Bottom"  />
+            <Grid Margin="0,0,0,0" Height="107" VerticalAlignment="Bottom" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="194*"/>
+                    <ColumnDefinition Width="219*"/>
+                </Grid.ColumnDefinitions>
+                <Border Margin="1,0,0,0" Background="#e1e9f7" RenderTransformOrigin="1,1" BorderBrush="#FFC5D0EE" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" Grid.Column="1"  />
+                <Border Margin="1,0,1,0" Background="#e1e9f7" RenderTransformOrigin="1,1" BorderBrush="#FFC5D0EE" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4"  />
+                <TextBox TabIndex="6" Margin="4,23,4,15" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" Text="{Binding WarehouseComment,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" AcceptsReturn="True"  SpellCheck.IsEnabled="True" BorderThickness="0" IsEnabled="{Binding WarehouseCommentsEnabled}"  />
+                <Label  Content="Warehouse Comments" Margin="1,-1,0,0" FontFamily="Verdana" HorizontalAlignment="Left" Width="146" Height="24" VerticalAlignment="Top"  />
+                <Label  Content="{Binding WarehouseTxtLengthError}" Padding="0" HorizontalAlignment="Right" Foreground="Red" FontSize="9" FontWeight="Bold" Margin="0,0,5,0" FontFamily="Verdana" Height="13" VerticalAlignment="Bottom"   />
+                <Label  Content="{Binding TransportTxtLengthError}" Padding="0" HorizontalAlignment="Right" Foreground="Red" FontSize="9" FontWeight="Bold" FontFamily="Verdana" Height="13" VerticalAlignment="Bottom"  Grid.Column="1" Margin="0,0,5,0"   />
+                <Label  Content="Transport Comments" Margin="1,-1,0,0" FontFamily="Verdana" HorizontalAlignment="Left" Width="152" Height="24" VerticalAlignment="Top" Grid.Column="1"  />
+                <TextBox TabIndex="6" Margin="5,23,4,15" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" Text="{Binding TransportComment,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" AcceptsReturn="True"  SpellCheck.IsEnabled="True" BorderThickness="0" Grid.Column="1"  />
+            </Grid>
+        </Grid>
+        <Border Margin="2,119,5,0" Height="187" VerticalAlignment="Top" Background="#e1e9f7" RenderTransformOrigin="1,1" BorderBrush="#FFC5D0EE" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" Grid.Column="4" >
+            <Grid>
+            <TextBlock x:Name="txtTermsID_Copy"  Height="24" Margin="119,3,2,0" TextWrapping="Wrap"  Text="{Binding SalesOrder.OrderDate, StringFormat=dd/MM/yyyy}" VerticalAlignment="Top"  Background="White" TextAlignment="Right" />
+            <TextBlock Visibility="{Binding DiscountAppliedTextVisibility}" Text="CATEGORY DISCOUNT APPLIED" FontWeight="Bold" FontSize="10" Foreground="White" Background="Green" TextAlignment="Right" Padding="0,5,5,0" Margin="0,0,0,3" Height="21" VerticalAlignment="Bottom" />
+                </Grid>
+        </Border>
+        <Border Margin="6,0,0,118" Height="179" VerticalAlignment="Bottom" Background="#e1e9f7" RenderTransformOrigin="1,1" BorderBrush="#FFC5D0EE" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" Grid.ColumnSpan="3"  >
+            <TextBlock Margin="0,144,32,0" Padding="0,6,5,0" TextAlignment="Right" FontSize="16" Background="#e1e9f7" Foreground="Black" FontFamily="Arial" FontWeight="Bold" Height="28" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100"><Run Text="{Binding SalesOrder.FreightTotal, StringFormat=\{0:c\}}"/></TextBlock>
+        </Border>
+
+        <TextBlock Background="#FF938F8F" Foreground="White" Padding="0,3,0,0" Margin="0,38,-1,0" TextWrapping="Wrap" Text="Update Sales Order" TextAlignment="Center" FontWeight="Bold" FontSize="20" FontFamily="Arial" Height="32" VerticalAlignment="Top" Grid.ColumnSpan="5"/>
+        <Border Margin="1,119,1,0" Height="188" VerticalAlignment="Top" Background="#e1e9f7" RenderTransformOrigin="1,1" BorderBrush="#FFC5D0EE" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" Grid.Column="1" />
+        <Label  Content="Sold To" Margin="4,123,0,0" FontFamily="Verdana" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="54" Grid.Column="1"  />
+        <TextBox Height="154" TabIndex="6" Margin="4,149,4,0" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" Text="{Binding SalesOrder.BillTo}" VerticalAlignment="Top" AcceptsReturn="True"  SpellCheck.IsEnabled="True" Grid.Column="1" BorderThickness="0" IsEnabled="{Binding SoldToEnabled}"  />
+        <!--<Button Content="UPDATE" TabIndex="10" Command="{Binding UpdateCommand}" HorizontalAlignment="Right" Margin="0,0,80,29" Width="74" Height="22" VerticalAlignment="Bottom" ToolTip="Add Order to production" Grid.Column="4" />-->
+        <!--<Button Content="CLEAR" TabIndex="11" Command="{Binding ClearFieldsCommand}" Margin="0,0,87,31" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="74" ToolTip="Clear field" Height="22" Grid.Column="4" />-->
+        <Border BorderBrush="#FFC5D0EE" Margin="5,308,5,300"  BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" Grid.ColumnSpan="5" >
+            <DataGrid x:Name="dgQuoteDetails1_Copy1"  BorderBrush="#FFE0E0E0" HorizontalGridLinesBrush="#FF9C9C9C" VerticalGridLinesBrush="#FF9C9C9C" HorizontalScrollBarVisibility="Disabled" FontFamily="Verdana" 
+        		ItemsSource="{Binding SalesOrder.SalesOrderDetails, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" GotFocus="DataGrid_CellGotFocus" IsEnabled="{Binding ProductGridEnabled}" AutoGenerateColumns="False" Margin="4,1,-4,1" Background="#e1e9f7" CanUserAddRows="True"   TabIndex="7" BorderThickness="0" Unloaded="dgQuoteDetails1_Copy1_Unloaded" >
+                <DataGrid.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"  Color="#FF8F8F8F"/>
+                </DataGrid.Resources>
+                <DataGrid.RowHeaderStyle>
+                    <Style TargetType="{x:Type DataGridRowHeader}">
+                        <Setter Property="Content" Value="{Binding OrderLine, Mode=TwoWay}" />
+                    </Style>
+                </DataGrid.RowHeaderStyle>
+
+                <DataGrid.Columns>
+                    <!-- Line No -->
+                    <!--<DataGridTextColumn Header="Line No" Width="auto" IsReadOnly="True" Binding="{Binding OrderLine, Mode=TwoWay}">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="TextAlignment" Value="Right" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>-->
+                    <!-- Order Qty -->
+                    <DataGridTemplateColumn  Width="Auto" Header="Qty" x:Name="dgQuantity3">
+                        <DataGridTemplateColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTemplateColumn.HeaderStyle>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Style="{StaticResource ResourceKey=TextBlockStyle}" Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"  TextAlignment="Right" FontSize="13" FontWeight="Medium" Padding="5" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <!--<TextBox  Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" PreviewTextInput="TextBox_PreviewTextInput"  />-->
+                                <TextBox  Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" FontSize="13" FontWeight="Medium" Padding="5" TextAlignment="Right">
+                                    <i:Interaction.Behaviors>
+                                        <Behaviors:TextBoxInputBehavior InputMode="DecimalInput" JustPositivDecimalInput="false" />
+                                    </i:Interaction.Behaviors>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="KeyUp" >
+                                            <i:InvokeCommandAction Command="{Binding DataContext.QuantityChangedCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+                    <!--Search Product Code-->
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button ToolTip="Search products" Command="{Binding DataContext.SearchProductCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}">
+                                    <Image Source="/A1RConsole;component/Images/search.png" Width="15" Height="15"></Image>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <!-- Product Code -->
+                    <DataGridTemplateColumn  Width="Auto" Header="Product Code">
+                        <DataGridTemplateColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTemplateColumn.HeaderStyle>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox 
+        							ItemsSource="{Binding DataContext.Product, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+        							DisplayMemberPath="ProductCode"
+        							SelectedItem="{Binding Product, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+        							SelectedValue="{Binding Product.ProductCode}"
+        							SelectedValuePath="ProductCode" 
+        							IsEditable="True" 
+                                    Padding="4,4,0,0"
+                                    IsEnabled="{Binding ProductCodeEnabled}" >
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged" >
+                                            <i:InvokeCommandAction Command="{Binding DataContext.SelectionChangedCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <ComboBox
+        							ItemsSource="{Binding DataContext.Product, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+        							DisplayMemberPath="ProductCode"
+        							SelectedItem="{Binding Product, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+        							SelectedValue="{Binding Product.ProductCode}"
+        							SelectedValuePath="ProductCode"
+        							IsEditable="True"
+                                    Padding="4,4,0,0"
+                                     IsEnabled="{Binding ProductCodeEnabled}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged" >
+                                            <i:InvokeCommandAction Command="{Binding DataContext.SelectionChangedCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+                    <!-- Product Description -->
+                    <DataGridTextColumn Header="Description" Width="*" IsReadOnly="False" Binding="{Binding QuoteProductDescription, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  >
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="TextAlignment" Value="Left" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    
+                    <!-- Qty In Stock -->
+                    <!--<DataGridTextColumn Header="Qty In Stock" Width="88" IsReadOnly="True" Binding="{Binding QtyInStock, Mode=TwoWay}" >
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Setter Property="Background" Value="{Binding InStockCellBack}" />
+                                <Setter Property="Foreground" Value="{Binding InStockCellFore}" />
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>-->
+                    <!-- To Manufacture -->
+                    <!--<DataGridTextColumn Header="   To Make" Width="88" IsReadOnly="True" Binding="{Binding QtyToMake, Mode=TwoWay}">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Setter Property="Background" Value="{Binding ToMakeCellBack}" />
+                                <Setter Property="Foreground" Value="{Binding ToMakeCellFore}" />
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>-->
+                    <!-- Type -->
+                    <DataGridTextColumn Binding="{Binding Product.ProductUnit,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="75" IsReadOnly="True" Header="Unit">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="TextAlignment" Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <!-- Is Qty reserved -->
+                    <DataGridTextColumn Binding="{Binding IsQtyReserved}" Width="auto" IsReadOnly="True" Header="   Stock&#xA;Assigned" >
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="TextAlignment" Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <!-- Price -->
+                    <DataGridTemplateColumn  Width="Auto" Header="List Price">
+                        <DataGridTemplateColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTemplateColumn.HeaderStyle>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Style="{StaticResource ResourceKey=TextBlockStyle}" Text="{Binding QuoteUnitPrice,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, StringFormat=$\{0\}}"  TextAlignment="Right" FontSize="13" FontWeight="Medium" Padding="5" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox  Text="{Binding QuoteUnitPrice, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" IsEnabled="{Binding Product.PriceEditEnabled}" FontSize="13" FontWeight="Medium" Padding="5" TextAlignment="Right">
+                                    <i:Interaction.Behaviors>
+                                        <Behaviors:TextBoxInputBehavior InputMode="DecimalInput" JustPositivDecimalInput="false" />
+                                    </i:Interaction.Behaviors>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="KeyUp" >
+                                            <i:InvokeCommandAction Command="{Binding DataContext.PriceLostFocusCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+                                        </i:EventTrigger>
+
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+                    <!--Discount-->
+                    <DataGridTemplateColumn  Width="Auto" Header="Discount" IsReadOnly="False">
+                        <DataGridTemplateColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTemplateColumn.HeaderStyle>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Style="{StaticResource ResourceKey=TextBlockStyle}" Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged}"  TextAlignment="Right" Padding="4,4,0,0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox  Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged}" Padding="4,4,0,0" >
+                                    <i:Interaction.Behaviors>
+                                        <Behaviors:TextBoxInputBehavior InputMode="DigitInput" JustPositivDecimalInput="false" />
+                                    </i:Interaction.Behaviors>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="KeyUp" >
+                                            <i:InvokeCommandAction Command="{Binding DataContext.DiscountLostFocusCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Total -->
+                    <DataGridTextColumn Binding="{Binding Total, StringFormat=\{0:c\}}" Width="100" IsReadOnly="True" Header="Total" >
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Padding" Value="5" />
+                                <Setter Property="TextAlignment" Value="Right" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="Medium" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                   
+                    <!-- REMOVE -->
+                    <DataGridTemplateColumn Width="30">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Button Margin="3" ToolTip="Remove product" Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding}"  >
+                                        <Image Source="/A1RConsole;component/Images/remove.png" Width="15" Height="15" />
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+        <Grid Margin="0,0,1,153" Grid.ColumnSpan="3" Grid.Column="2" HorizontalAlignment="Right" Width="331" Height="145" VerticalAlignment="Bottom">
+            <Border  HorizontalAlignment="Right" Margin="0,0,3,2" Width="325" Height="142" VerticalAlignment="Bottom" Background="White" RenderTransformOrigin="1,1" BorderBrush="#FFC5D0EE" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" />
+            <TextBlock Margin="0,0,176,6" Padding="0,10,5,0" TextAlignment="Right" FontSize="20" Background="#e1e9f7" Foreground="Black" FontFamily="Arial" FontWeight="Bold" HorizontalAlignment="Right" Width="149" Height="42" VerticalAlignment="Bottom"><Run Text="Total Amount"/></TextBlock>
+            <TextBlock Margin="0,0,7,6" Padding="0,10,5,0" TextAlignment="Right" FontSize="20" Background="#e1e9f7" Foreground="Black" FontFamily="Arial" FontWeight="Bold" HorizontalAlignment="Right" Width="165" Height="42" VerticalAlignment="Bottom"><Run Text="{Binding SalesOrder.TotalAmount, StringFormat=\{0:c\}}"/></TextBlock>
+            <TextBlock Margin="0,0,176,112" Padding="0,6,5,0" TextAlignment="Right" FontSize="16" Background="#e1e9f7" Foreground="Black" FontFamily="Arial" FontWeight="Bold" Height="28" VerticalAlignment="Bottom" Width="149" HorizontalAlignment="Right"><Run Text="Total Before Tax"/></TextBlock>
+            <TextBlock Margin="0,0,7,112" Padding="0,6,5,0" TextAlignment="Right" FontSize="16" Background="#e1e9f7" Foreground="Black" FontFamily="Arial" FontWeight="Bold" Height="28" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="165"><Run Text="{Binding SalesOrder.ListPriceTotal, StringFormat=\{0:c\}}"/></TextBlock>
+            <TextBlock Margin="0,0,176,50" Padding="0,6,5,0" TextAlignment="Right" FontSize="16" Background="#e1e9f7" Foreground="Black" FontFamily="Arial" FontWeight="Bold" Height="28" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="149"><Run Text="GST"/></TextBlock>
+            <TextBlock Margin="0,0,7,50" Padding="0,6,5,0" TextAlignment="Right" FontSize="16" Background="#e1e9f7" Foreground="Black" FontFamily="Arial" FontWeight="Bold" Height="28" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="165"><Run Text="{Binding SalesOrder.GST, StringFormat=\{0:c\}}"/></TextBlock>
+            <TextBlock Margin="0,0,176,80" Padding="0,6,5,0" TextAlignment="Right" FontSize="16" Background="#e1e9f7" Foreground="Black" FontFamily="Arial" FontWeight="Bold" Height="28" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="149"><Run Text="Freight"/></TextBlock>
+            <TextBlock Margin="0,0,7,80" Padding="0,6,5,0" TextAlignment="Right" FontSize="16" Background="#e1e9f7" Foreground="Black" FontFamily="Arial" FontWeight="Bold" Height="28" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="165"><Run Text="{Binding SalesOrder.FreightTotal, StringFormat=\{0:c\}}"/></TextBlock>
+            <CheckBox Content="GST Enabled" IsChecked="{Binding GSTActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding GSTEnabled,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Right" Height="15" VerticalAlignment="Top" Width="72" FontSize="10" Padding="0" Margin="0,79,214,0" />
+        </Grid>
+
+
+        <Grid Margin="10,0,0,15" HorizontalAlignment="Left" Width="301" Height="88" VerticalAlignment="Bottom">
+            <Label  Content="Carrier Name" Margin="0,4,0,56" FontFamily="Verdana" HorizontalAlignment="Left" Width="93"  />
+            <ComboBox x:Name="cmbCustomers_Copy1" 
+        		IsTextSearchEnabled="True"
+                      IsEnabled="{Binding CarrierNameEnabled}"
+        		TabIndex="3"  
+        		IsEditable="False"        	
+        		ItemsSource="{Binding FreightList, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+        		DisplayMemberPath="FreightName"  
+        		SelectedValuePath="FreightName"   
+        		SelectedItem="{Binding SalesOrder.FreightCarrier, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+        		Text="{Binding SalesOrder.FreightCarrier.FreightName, UpdateSourceTrigger=PropertyChanged}"    
+        		TextSearch.TextPath="FreightName"
+        		Background="white" Foreground="Black" FontFamily="Verdana" Margin="89,4,0,56" HorizontalAlignment="Left" Width="201" Height="23" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged" >
+                        <i:InvokeCommandAction Command="{Binding FreightCodeChangedCommand}" CommandParameter="{Binding}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+            <Label Content="*" Foreground="red" FontSize="16" FontWeight="Bold" Margin="292,3,-2,0" VerticalAlignment="Top" Padding="0" Height="13" HorizontalAlignment="Left" Width="11"/>
+            <Label  Content="Pickup Time" Margin="1,31,0,0" FontFamily="Verdana" Height="24" VerticalAlignment="Top" HorizontalAlignment="Left" Width="83"  />
+            <ComboBox 
+        	x:Name="cmbDelivery_Copy"
+        	TabIndex="6"  
+        	IsEditable="False"   
+                IsEnabled="{Binding PickUpTimeEnabled}"
+        	SelectedValuePath="Content"
+        	Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="89,31,0,0" Height="23" VerticalAlignment="Top" SelectedValue="{Binding SalesOrder.PickupTime}" HorizontalAlignment="Left" Width="142" >
+                <ComboBoxItem Content="Not Sure"/>
+                <ComboBoxItem Content="Morning"/>
+                <ComboBoxItem Content="Arvo" />
+            </ComboBox>
+
+        </Grid>
+
+        <!--
+
+        </ComboBox>-->
+        <Border Margin="2,120,1,0" Height="187" VerticalAlignment="Top" Background="#e1e9f7" RenderTransformOrigin="1,1" BorderBrush="#FFC5D0EE" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" Grid.Column="3" />
+        <Label  Content="Discount" Margin="0,121,0,0" FontFamily="Verdana" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="65" Grid.Column="3"  />
+        <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="153"  Width="Auto" Margin="4,150,4,0" VerticalAlignment="Top" 
+                  ItemsSource="{Binding DisplayDiscountStructure,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Grid.Column="3" BorderThickness="0" ItemContainerStyle="{StaticResource alternatingStyle}" AlternationCount="2">
+            <ListView.View>
+                <GridView >
+                    <!--<GridViewColumn Width="Auto" Header="Category"  DisplayMemberBinding="{Binding Category.CategoryName}"  />-->
+                    <!--<GridViewColumn Header="" Width="1" />-->
+                    <GridViewColumn Width="Auto"  Header="Category and Price">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Width="Auto" TextAlignment="Left" Text="{Binding DiscountStr,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"  />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+            <!--<ListView.View>
+                <GridView>
+                    <GridViewColumn Width="Auto" Header="Category"  DisplayMemberBinding="{Binding Category.CategoryName}" />
+                    <GridViewColumn Width="50" Header="Discount"  DisplayMemberBinding="{Binding Discount, StringFormat=\{0\}%}" />
+                </GridView>
+            </ListView.View>-->
+        </ListView>
+        <Border Margin="1,119,0,0" Height="188" VerticalAlignment="Top" Background="#e1e9f7" RenderTransformOrigin="1,1" BorderBrush="#FFC5D0EE" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" Grid.Column="2" />
+        <Label  Content="Ship To" Margin="1,121,0,0" FontFamily="Verdana" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="54" Grid.Column="2"  />
+        <TextBox Height="153" TabIndex="6" Margin="4,150,4,0" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" Text="{Binding SalesOrder.ShipTo}" VerticalAlignment="Top" AcceptsReturn="True"  SpellCheck.IsEnabled="True" Grid.Column="2" BorderThickness="0" IsEnabled="{Binding ShipToEnabled}" />
+        <Grid Margin="6,119,2,0" Height="190" VerticalAlignment="Top">
+            <Border Background="#e1e9f7" RenderTransformOrigin="1,1" BorderBrush="#FFC5D0EE" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" Margin="0,0,0,3" >
+                <!--<TextBox Height="23" Margin="103,58,8,0" TextWrapping="Wrap" Text="{Binding SalesOrder.PrepaidCustomerName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Visibility="{Binding PrepaidCustomerVisibility}" />-->
+            </Border>
+            <Label  Content="Customer Name" Margin="-1,60,0,0" FontFamily="Verdana"  Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="114"  />
+            <!--<ComboBox x:Name="cmbCustomers" 
+                IsTextSearchEnabled="True"
+        		TabIndex="3"  
+        		IsEditable="True"        	
+        		ItemsSource="{Binding CustomerList, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" 
+        		DisplayMemberPath="CompanyName"  
+        		SelectedValuePath="CompanyName"   
+        		Text="{Binding SelectedCustomer, UpdateSourceTrigger=PropertyChanged}"    
+        		TextSearch.TextPath="CompanyName"
+                IsEnabled="False"
+        		Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="104,60,10,0" Height="23 " VerticalAlignment="Top" />-->
+            <TextBox x:Name="txtTermsID_Copy4" IsEnabled="False" TabIndex="4" Height="23" Margin="104,60,10,0" TextWrapping="Wrap" IsReadOnly="False" Text="{Binding SelectedCustomer}" Padding="2,2,0,0" VerticalAlignment="Top"  Background="White" />
+            <Label  Content="Order Priority" Margin="0,160,0,0" FontFamily="Verdana" Height="28" VerticalAlignment="Top" HorizontalAlignment="Left" Width="104"  />
+            <ComboBox 
+        		x:Name="cmbDispatchTime_Copy1"
+        		TabIndex="5"  
+        		IsEditable="False"   
+        		SelectedValuePath="Content"
+                IsEnabled="{Binding OrderPriorityEnabled}"
+                Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="104,162,0,0" Height="23" 
+                VerticalAlignment="Top" SelectedValue="{Binding SelectedOrderPriority,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="102" >
+                <ComboBoxItem Content="Normal"/>
+                <ComboBoxItem Content="Urgent" />
+            </ComboBox>
+            <Label  Content="Order Status" Margin="-1,136,0,0" FontFamily="Verdana" Height="23 " VerticalAlignment="Top" HorizontalAlignment="Left" Width="105"  />
+            <ComboBox 
+        		x:Name="cmbDispatchTime_Copy"
+        		TabIndex="5"  
+        		IsEditable="False"   
+        		SelectedValuePath="Content"
+        		Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="104,136,0,0" Height="23" VerticalAlignment="Top" 
+                SelectedValue="{Binding SelectedOrderAction,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" HorizontalAlignment="Left" Width="102">
+                <!--<ComboBoxItem Content="Select" />-->
+                <ComboBoxItem Content="Hold" Visibility="{Binding HoldVisibility}" />
+                <ComboBoxItem Content="Release" Visibility="{Binding ReleaseVisibility}" />
+                <ComboBoxItem Content="Cancel" Visibility="{Binding CancelVisibility}" />
+                <ComboBoxItem Content="Dispatched" Visibility="{Binding DispatchedVisibility}" />
+                <ComboBoxItem Content="Return" Visibility="{Binding ReturnVisibility}" />
+            </ComboBox>
+            <Label  Content="Dispatch Date" Margin="-1,109,0,0" FontFamily="Verdana" Height="24" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105"  />
+            <DatePicker                  DisplayDateStart="{Binding CurrentDate}"
+        		SelectedDate="{Binding SalesOrder.DesiredDispatchDate}"
+                IsEnabled="{Binding DispatchDateEnabled}"
+        		Margin="104,110,0,0" 
+        		TabIndex="7" Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="102"/>
+            <Label  Content="Customer ONo" Margin="-1,85,0,0" FontFamily="Verdana" Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105"  />
+            <TextBox x:Name="txtTermsID_Copy1" TabIndex="4" Height="23" Margin="104,85,0,0" TextWrapping="Wrap" IsReadOnly="False" Text="{Binding SalesOrder.CustomerOrderNo}" Padding="2,2,0,0" VerticalAlignment="Top"  Background="White" HorizontalAlignment="Left" Width="102" IsEnabled="{Binding CustomerOrderNoEnabled}" />
+            <Label  Content="Stock Location" Margin="-1,10,0,0" FontFamily="Verdana"  Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="124"  />
+            <Label  Content="Customer Type" Margin="-1,35,0,0" FontFamily="Verdana"  Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="105"  />
+
+
+
+        </Grid>
+        <Label  Content="Sale Made By" Margin="2,202,0,0" FontFamily="Verdana" HorizontalAlignment="Left" Width="119" Height="24" VerticalAlignment="Top" Grid.Column="4"  />
+        <Label  Content="Sale Updated By" Margin="1,228,0,0" FontFamily="Verdana" HorizontalAlignment="Left" Width="125" Height="27" VerticalAlignment="Top" Grid.Column="4"  />
+        <TextBlock x:Name="txtUnit_Copy" Height="23" Margin="123,203,9,0" TextWrapping="Wrap" Text="{Binding SalesOrder.SalesMadeBy}" VerticalAlignment="Top"  Background="White" RenderTransformOrigin="0.49,0.522" Grid.Column="4" TextAlignment="Right" />
+        <TextBlock x:Name="txtUnit_Copy1" Height="23" Margin="123,229,9,0" TextWrapping="Wrap" Text="{Binding SalesOrder.SalesCompletedBy}" VerticalAlignment="Top"  Background="White" RenderTransformOrigin="0.49,0.522" Grid.Column="4" TextAlignment="Right" />
+        <TextBlock x:Name="txtUnit_Copy2" Height="23" Margin="123,255,9,0" TextWrapping="Wrap" Text="{Binding SalesOrder.LastModifiedDate,StringFormat=dd/MM/yyyy}" VerticalAlignment="Top"  Background="White" RenderTransformOrigin="0.49,0.522" Grid.Column="4" TextAlignment="Right" />
+        <Label  Content="Quote No" Margin="2,176,0,0" FontFamily="Verdana" Height="24" VerticalAlignment="Top" Grid.Column="4" HorizontalAlignment="Left" Width="116"  />
+        <TextBlock x:Name="txtUnit_Copy4" Height="23" Margin="123,177,9,0" TextWrapping="Wrap" Text="{Binding QuoteNo}" VerticalAlignment="Top"  Background="White" RenderTransformOrigin="0.49,0.522" Grid.Column="4" TextAlignment="Right" />
+
+        <DataGrid x:Name="FreightCode_Datagrid"  BorderBrush="White" HorizontalGridLinesBrush="#FF9C9C9C" VerticalGridLinesBrush="#FF9C9C9C" HorizontalScrollBarVisibility="Disabled" FontFamily="Verdana" 
+        	ItemsSource="{Binding SalesOrder.FreightDetails, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" GotFocus="FreightCode_Datagrid_CellGotFocus" IsEnabled="{Binding FreightGridEnabled}"
+        	AutoGenerateColumns="False" Margin="9,0,4,153" Background="#e1e9f7" CanUserAddRows="True"   Grid.ColumnSpan="3" Height="140" VerticalAlignment="Bottom" BorderThickness="0" >
+            <!--<DataGrid.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"  Color="#FF8F8F8F"/>
+            </DataGrid.Resources>-->
+            <DataGrid.Columns>
+                <!-- Pallets -->
+                <DataGridTemplateColumn   Header=" Pallets" Width="Auto" IsReadOnly="False" >
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Style="{StaticResource ResourceKey=TextBlockStyle}" Text="{Binding Pallets, UpdateSourceTrigger=PropertyChanged}"  TextAlignment="Right" FontSize="13" FontWeight="Medium" Padding="5" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <!--<TextBox  Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" PreviewTextInput="TextBox_PreviewTextInput"  />-->
+                            <TextBox  Text="{Binding Pallets, UpdateSourceTrigger=PropertyChanged}" FontSize="13" FontWeight="Medium" Padding="5" TextAlignment="Right" >
+                                <i:Interaction.Behaviors>
+                                    <Behaviors:TextBoxInputBehavior InputMode="DecimalInput" JustPositivDecimalInput="false" />
+                                </i:Interaction.Behaviors>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+                <!-- Freight Code -->
+                <DataGridTemplateColumn  Width="170" Header="Freight Code">
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox Padding="5"
+        						ItemsSource="{Binding DataContext.FreightCodeDetails, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+        						DisplayMemberPath="Code"
+        						SelectedItem="{Binding FreightCodeDetails, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+        						SelectedValue="{Binding FreightCodeDetails.Code}"
+        						SelectedValuePath="Code" 
+                                IsEnabled="{Binding FreightCodeEnabled}"
+        						IsEditable="True" >
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged" >
+                                        <i:InvokeCommandAction Command="{Binding DataContext.FreightChangedCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <ComboBox Padding="5"
+        						ItemsSource="{Binding DataContext.FreightCodeDetails, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+        						DisplayMemberPath="Code"
+        						SelectedItem="{Binding FreightCodeDetails, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+        						SelectedValue="{Binding FreightCodeDetails.Code}"
+        						SelectedValuePath="Code"
+                                IsEnabled="{Binding FreightCodeEnabled}"
+        						IsEditable="True">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged" >
+                                        <i:InvokeCommandAction Command="{Binding DataContext.FreightChangedCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                    
+                </DataGridTemplateColumn>
+                <!-- Freight Description -->
+                <DataGridTextColumn Header="Description" Width="*" IsReadOnly="False" Binding="{Binding DummyDescription, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Padding" Value="5" />
+                            <Setter Property="TextAlignment" Value="Left" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontWeight" Value="Medium" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <!-- Unit -->
+                <DataGridTextColumn Binding="{Binding FreightCodeDetails.Unit, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="75" IsReadOnly="True" Header="   Unit">
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Padding" Value="5" />
+                            <Setter Property="TextAlignment" Value="Left" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontWeight" Value="Medium" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+             
+
+                <!--Price-->
+                <DataGridTemplateColumn  Width="90" Header="Price">
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <currency:CurrencyTextBox  Number="{Binding DummyPrice,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="13" FontWeight="Medium" Padding="5" TextAlignment="Right" IsEnabled="{Binding FreightCodeDetails.PriceEnabled,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="KeyUp" >
+                                        <i:InvokeCommandAction Command="{Binding DataContext.FreightPriceKeyUpCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </currency:CurrencyTextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <currency:CurrencyTextBox  Number="{Binding DummyPrice,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="13" FontWeight="Medium" Padding="5" TextAlignment="Right" IsEnabled="{Binding FreightCodeDetails.PriceEnabled,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
+
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="KeyUp" >
+                                        <i:InvokeCommandAction Command="{Binding DataContext.FreightPriceKeyUpCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </currency:CurrencyTextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <!-- Discount -->
+                <DataGridTemplateColumn  Width="auto" Header="Discount">
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </DataGridTemplateColumn.HeaderStyle>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Style="{StaticResource ResourceKey=TextBlockStyle}" IsEnabled="{Binding DisEnable}" Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged}"  TextAlignment="Right" Padding="4,4,0,0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox  Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged}" Padding="4,4,0,0" IsEnabled="{Binding DisEnable}" >
+                                <i:Interaction.Behaviors>
+                                    <Behaviors:TextBoxInputBehavior InputMode="DigitInput" JustPositivDecimalInput="false" />
+                                </i:Interaction.Behaviors>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="KeyUp" >
+                                        <i:InvokeCommandAction Command="{Binding DataContext.DiscountLostFocusCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <!-- Total -->
+                <DataGridTextColumn Binding="{Binding Total, Mode=TwoWay, NotifyOnTargetUpdated=True, StringFormat=\{0:c\}, UpdateSourceTrigger=PropertyChanged}" Width="150" IsReadOnly="True" Header="    Total" >
+                    <DataGridTextColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalContentAlignment"  Value="Center" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </DataGridTextColumn.HeaderStyle>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Padding" Value="5" />
+                            <Setter Property="TextAlignment" Value="Right" />
+                            <Setter Property="FontSize" Value="13" />
+                            <Setter Property="FontWeight" Value="Medium" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <!-- REMOVE -->
+                <DataGridTemplateColumn Width="30">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Button Margin="3" ToolTip="Remove product" Command="{Binding DataContext.RemoveFreightCodeCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"  CommandParameter="{Binding}"  >
+                                    <Image Source="/A1RConsole;component/Images/remove.png" Width="15" Height="15" />
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Label  Content="Freight Total" Margin="0,0,93,125" FontFamily="Verdana" HorizontalAlignment="Right" Width="115" Height="24" VerticalAlignment="Bottom" Grid.Column="1" Grid.ColumnSpan="2"  />
+        <Label  Content="Sales No" Margin="2,150,0,0" FontFamily="Verdana" Height="24" VerticalAlignment="Top" Grid.Column="4" HorizontalAlignment="Left" Width="116"  />
+        <TextBlock x:Name="txtUnit_Copy5" Height="23" Margin="123,150,9,0" TextWrapping="Wrap" Text="{Binding SalesOrder.SalesOrderNo}" VerticalAlignment="Top"  Background="White" RenderTransformOrigin="0.49,0.522" Grid.Column="4" TextAlignment="Right" />
+        <Label Content="*" Foreground="red" FontSize="16" FontWeight="Bold" Margin="212,225,0,0" VerticalAlignment="Top" Padding="0" Height="13" HorizontalAlignment="Left" Width="9"/>
+        <Label Content="*" Foreground="red" FontSize="16" FontWeight="Bold" Margin="0,175,3,0" VerticalAlignment="Top" Padding="0" Height="13" HorizontalAlignment="Right" Width="9"/>
+        <Label  Content="Order date" Margin="2,124,0,0" FontFamily="Verdana" Height="24" VerticalAlignment="Top" Grid.Column="4" HorizontalAlignment="Left" Width="116"  />
+        <Label  Content="Last Updated Date" Margin="1,253,0,0" FontFamily="Verdana" Height="25" VerticalAlignment="Top" Grid.Column="4" HorizontalAlignment="Left" Width="125"  />
+        <ComboBox 
+        	x:Name="cmbDispatchTime_Copy3"
+        	TabIndex="5"  
+        	IsEditable="False"   
+        	SelectedValuePath="Content"
+            IsEnabled="False"
+        	Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="110,129,0,0" Height="23             " VerticalAlignment="Top" SelectedValue="{Binding SelectedStockLocation}" HorizontalAlignment="Left" Width="81" >
+            <ComboBoxItem Content="QLD"/>
+            <ComboBoxItem Content="NSW" />
+        </ComboBox>
+        <Label Content="*" Foreground="red" FontSize="16" FontWeight="Bold" Margin="211,251,0,0" VerticalAlignment="Top" Padding="0" Height="13" HorizontalAlignment="Left" Width="9"/>
+        <Label Content="*" Foreground="red" FontSize="16" FontWeight="Bold" Margin="191,125,0,0" VerticalAlignment="Top" Padding="0" Height="13" HorizontalAlignment="Left" Width="9"/>
+        <ComboBox 
+        	x:Name="cmbDispatchTime_Copy4"
+        	TabIndex="5"  
+        	IsEditable="False"   
+            IsEnabled="False"
+        	SelectedValuePath="Content"            
+        	Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="110,154,0,0" Height="23             " VerticalAlignment="Top" SelectedValue="{Binding SelectedCustomerType}" HorizontalAlignment="Left" Width="81" >
+            <ComboBoxItem Content="Account"/>
+            <ComboBoxItem Content="Prepaid" />
+        </ComboBox>
+        <Label  Content="Terms ID" Margin="196,154,0,0" FontFamily="Verdana" HorizontalAlignment="Left" Width="65" Height="23" VerticalAlignment="Top"  />
+        <ComboBox 
+        		x:Name="cmbDispatchTime_Copy2"
+        		TabIndex="5"  
+        		IsEditable="False"   
+                IsEnabled="False"
+        		SelectedValuePath="Content"
+        		Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="261,154,0,0" Height="23" VerticalAlignment="Top" SelectedValue="{Binding SalesOrder.TermsID,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="121" >
+            <ComboBoxItem Content="Prepaid"/>
+            <ComboBoxItem Content="30EOM" Margin="0,0,-2,0" />
+        </ComboBox>
+        <Grid Margin="0,199,10,0" Height="105" VerticalAlignment="Top" HorizontalAlignment="Right" Width="155" Visibility="{Binding CreditLimitVisibility}">
+            <Label  Content="Credit Limit" Margin="0,5,0,0" FontFamily="Verdana"  Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="86" FontSize="8"  />
+            <TextBox x:Name="txtTermsID_Copy2" TabIndex="4" Height="23" Margin="78,5,-1,0" TextWrapping="Wrap" Text="{Binding CreditLimit, StringFormat=\{0:c\}}" VerticalAlignment="Top"  Background="White" HorizontalAlignment="Left" Width="75" IsReadOnly="True" TextAlignment="Right" />
+            <Label  Content="Credit Remaining" Margin="0,29,0,0" FontFamily="Verdana"  Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" Width="86" FontSize="8"  />
+            <TextBox x:Name="txtTermsID_Copy3" TabIndex="4" Height="23" Margin="78,29,-1,0" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding CreditRemaining, StringFormat=\{0:c\}}" VerticalAlignment="Top"  Background="White" HorizontalAlignment="Left" Width="75" TextAlignment="Right" />
+            <Label  Content="Total Owing" Margin="0,53,0,0" FontFamily="Verdana"  Height="21" VerticalAlignment="Top" HorizontalAlignment="Left" Width="79" FontSize="8"  />
+            <TextBox x:Name="txtTermsID_Copy5" TabIndex="4" Height="23" Margin="78,53,0,-3" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding TotalOwed, StringFormat=\{0:c\}}" VerticalAlignment="Top"  HorizontalAlignment="Left" Width="75" TextAlignment="Right" Background="white"  />
+            <!--<Label  Content="Total Debt" Margin="0,77,0,0" FontFamily="Verdana"  Height="21" VerticalAlignment="Top" HorizontalAlignment="Left" Width="86" FontSize="8"  />
+            <TextBox x:Name="txtTermsID_Copy6" TabIndex="4" Height="23" Margin="78,77,0,0" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding CreditOwing, StringFormat=\{0:c\}}" VerticalAlignment="Top"  HorizontalAlignment="Left" Width="75" TextAlignment="Right" Background="{Binding CreditOweBackground}" Foreground="{Binding CreditOweForeground}" />-->
+        </Grid>
+        <Button Content="CLOSE" HorizontalAlignment="Right" VerticalAlignment="Center" Width="110" Height="30" HorizontalContentAlignment="Left" Margin="0,766,3,4" Command="{Binding CloseCommand}"  ToolTip="Close this window" Grid.Column="4">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="#666666"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+
+        <!--<Button Content="CLOSE" TabIndex="11" Command="{Binding CloseCommand}" Margin="0,0,4,29" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="74" ToolTip="Clear field" Height="22" Grid.Column="4" />-->
+
+        <Button Content="UPDATE" HorizontalAlignment="Right" VerticalAlignment="Center" Width="110" Height="30" HorizontalContentAlignment="Left" Margin="0,766,112,4" Command="{Binding UpdateCommand}"  ToolTip="Update sales order" Grid.Column="3" Grid.ColumnSpan="2" IsEnabled="{Binding UpdateEnabled}" >
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="{Binding UpdateBackground}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <Border Margin="5,74,5,0" Background="{Binding StatusBackGroundCol}" RenderTransformOrigin="1,1" BorderBrush="{Binding StatusBackGroundCol}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4" Grid.ColumnSpan="5" Height="40" VerticalAlignment="Top"  >
+            <TextBox  Text="{Binding OrderStatusString}" Padding="9" TextAlignment="Center" Margin="0,0,0,0" FontFamily="Verdana" FontSize="14" FontWeight="ExtraBold" Background="{Binding StatusBackGroundCol}" Foreground="White" Grid.Column="3" Grid.ColumnSpan="2" BorderThickness="0" TextWrapping="Wrap" BorderBrush="{x:Null}" />
+        </Border>
+        <Button Content="ADD/UPDATE" HorizontalAlignment="Right" VerticalAlignment="Top" Width="64" Height="20" HorizontalContentAlignment="Left" Margin="0,124,1,0" Command="{Binding AddUpdateDiscountCommand}"  ToolTip="Add/Update discount" IsEnabled="{Binding AddUpdateActive}" Grid.Column="3">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="{Binding AddUpdateBackground}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="8"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="2,2,2,2" CornerRadius="4,4,4,4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4c4c4c"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <Label Content="*" Foreground="red" FontSize="16" FontWeight="Bold" Margin="55,124,0,0" VerticalAlignment="Top" Padding="0" Height="13" HorizontalAlignment="Left" Width="9" Grid.Column="1"/>
+        <!--<Grid Margin="5,0,1,33" Grid.ColumnSpan="2" Grid.Column="3" Height="91" VerticalAlignment="Bottom" Visibility="{Binding PaymentRecievedVisibility}">
+            <ComboBox 
+        		x:Name="cmbDispatchTime_Copy5"
+        		TabIndex="5"  
+        		IsEditable="False"   
+        		SelectedValuePath="Content"
+        		Background="#e1e9f7" Foreground="Black" FontFamily="Verdana" Margin="0,0,5,37" Height="23" VerticalAlignment="Bottom" SelectedValue="{Binding SelectedPaymentRecieved}" HorizontalAlignment="Right" Width="48" >
+                <ComboBoxItem Content="Yes"/>
+                <ComboBoxItem Content="No" />
+            </ComboBox>
+            <TextBlock  Text="{Binding PaymentReceievedString}" Margin="0,0,58,36" Padding="0,5,0,0"  TextAlignment="Right"  Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="262" FontWeight="Bold" FontSize="16" FontFamily="Arial"  />
+        </Grid>-->
+    </Grid>
+</UserControl>
